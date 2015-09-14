@@ -7,12 +7,29 @@
  */
 
 #include <jni.h>
+#include <type_traits>
 #include "common/hello.h"
 
-extern "C"
-JNIEXPORT jstring
-Java_com_facebook_buck_demo_Hello_getHelloString(JNIEnv *env, jobject obj)
+static jstring getHelloString(JNIEnv *env, jobject obj)
 {
   const char *str = helloString();
   return env->NewStringUTF(str);
+}
+
+extern "C"
+JNIEXPORT jint JNI_OnLoad(JavaVM* vm, void* reserved) {
+  JNIEnv* env(nullptr);
+  if (JNI_OK != vm->GetEnv(reinterpret_cast<void**>(&env), JNI_VERSION_1_6)) {
+    return JNI_ERR;
+  }
+
+  jclass helloClass = env->FindClass("com/facebook/buck/demo/Hello");
+  JNINativeMethod methods[] = {
+    { "getHelloString", "()Ljava/lang/String;", (void*) getHelloString },
+  };
+
+  if (JNI_OK != env->RegisterNatives(helloClass, methods, std::extent<decltype(methods)>::value)) {
+    return JNI_ERR;
+  }
+  return JNI_VERSION_1_6;
 }
