@@ -1,0 +1,656 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		282BFE1B171602C60022F9FF /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 282BFE1A171602C60022F9FF /* Cocoa.framework */; };
+		282BFE2B1716044C0022F9FF /* otest-shim.m in Sources */ = {isa = PBXBuildFile; fileRef = 283CCA9916C2EE4C00F2E343 /* otest-shim.m */; };
+		2839BE60183FEB6F000D7BEC /* SenTestClassEnumeratorFix.h in Headers */ = {isa = PBXBuildFile; fileRef = 2839BE5E183FEB6F000D7BEC /* SenTestClassEnumeratorFix.h */; };
+		2839BE61183FEB6F000D7BEC /* SenTestClassEnumeratorFix.h in Headers */ = {isa = PBXBuildFile; fileRef = 2839BE5E183FEB6F000D7BEC /* SenTestClassEnumeratorFix.h */; };
+		2839BE62183FEB6F000D7BEC /* SenTestClassEnumeratorFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 2839BE5F183FEB6F000D7BEC /* SenTestClassEnumeratorFix.m */; };
+		2839BE63183FEB6F000D7BEC /* SenTestClassEnumeratorFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 2839BE5F183FEB6F000D7BEC /* SenTestClassEnumeratorFix.m */; };
+		2839BE8B1843CCFF000D7BEC /* SenTestCaseInvokeTestFix.h in Headers */ = {isa = PBXBuildFile; fileRef = 2839BE891843CCFF000D7BEC /* SenTestCaseInvokeTestFix.h */; };
+		2839BE8C1843CCFF000D7BEC /* SenTestCaseInvokeTestFix.h in Headers */ = {isa = PBXBuildFile; fileRef = 2839BE891843CCFF000D7BEC /* SenTestCaseInvokeTestFix.h */; };
+		2839BE8D1843CCFF000D7BEC /* SenTestCaseInvokeTestFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 2839BE8A1843CCFF000D7BEC /* SenTestCaseInvokeTestFix.m */; };
+		2839BE8E1843CCFF000D7BEC /* SenTestCaseInvokeTestFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 2839BE8A1843CCFF000D7BEC /* SenTestCaseInvokeTestFix.m */; };
+		283CCA9A16C2EE4C00F2E343 /* otest-shim.m in Sources */ = {isa = PBXBuildFile; fileRef = 283CCA9916C2EE4C00F2E343 /* otest-shim.m */; };
+		2887CC41181E0D9200B0D049 /* DuplicateTestNameFix.h in Headers */ = {isa = PBXBuildFile; fileRef = 2887CC3F181E0D9200B0D049 /* DuplicateTestNameFix.h */; };
+		2887CC42181E0D9200B0D049 /* DuplicateTestNameFix.h in Headers */ = {isa = PBXBuildFile; fileRef = 2887CC3F181E0D9200B0D049 /* DuplicateTestNameFix.h */; };
+		2887CC43181E0D9200B0D049 /* DuplicateTestNameFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 2887CC40181E0D9200B0D049 /* DuplicateTestNameFix.m */; };
+		2887CC44181E0D9200B0D049 /* DuplicateTestNameFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 2887CC40181E0D9200B0D049 /* DuplicateTestNameFix.m */; };
+		2887CC47181E145D00B0D049 /* TestingFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = 2887CC45181E145D00B0D049 /* TestingFramework.h */; };
+		2887CC48181E145D00B0D049 /* TestingFramework.h in Headers */ = {isa = PBXBuildFile; fileRef = 2887CC45181E145D00B0D049 /* TestingFramework.h */; };
+		2887CC49181E145D00B0D049 /* TestingFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = 2887CC46181E145D00B0D049 /* TestingFramework.m */; };
+		2887CC4A181E145D00B0D049 /* TestingFramework.m in Sources */ = {isa = PBXBuildFile; fileRef = 2887CC46181E145D00B0D049 /* TestingFramework.m */; };
+		28897FC9173E50F9004BA024 /* Swizzle.h in Headers */ = {isa = PBXBuildFile; fileRef = 28897FC7173E50F9004BA024 /* Swizzle.h */; };
+		28897FCA173E50F9004BA024 /* Swizzle.h in Headers */ = {isa = PBXBuildFile; fileRef = 28897FC7173E50F9004BA024 /* Swizzle.h */; };
+		28897FCB173E50F9004BA024 /* Swizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 28897FC8173E50F9004BA024 /* Swizzle.m */; };
+		28897FCC173E50F9004BA024 /* Swizzle.m in Sources */ = {isa = PBXBuildFile; fileRef = 28897FC8173E50F9004BA024 /* Swizzle.m */; };
+		28E28FB417968EC50072376C /* ReporterEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 28E28FB317968EC50072376C /* ReporterEvents.h */; };
+		28E28FB517968EC50072376C /* ReporterEvents.h in Headers */ = {isa = PBXBuildFile; fileRef = 28E28FB317968EC50072376C /* ReporterEvents.h */; };
+		28E44D521811024F00211BD5 /* ParseTestName.h in Headers */ = {isa = PBXBuildFile; fileRef = 28E44D501811024F00211BD5 /* ParseTestName.h */; };
+		28E44D531811024F00211BD5 /* ParseTestName.h in Headers */ = {isa = PBXBuildFile; fileRef = 28E44D501811024F00211BD5 /* ParseTestName.h */; };
+		28E44D541811024F00211BD5 /* ParseTestName.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E44D511811024F00211BD5 /* ParseTestName.m */; };
+		28E44D551811024F00211BD5 /* ParseTestName.m in Sources */ = {isa = PBXBuildFile; fileRef = 28E44D511811024F00211BD5 /* ParseTestName.m */; };
+		28E9B9DF16C32E9A00A52E4D /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 283CCA9416C2EE4C00F2E343 /* Foundation.framework */; };
+		28EC2602184EABF50061C3B2 /* XcodeRequiredVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EC2601184EABF50061C3B2 /* XcodeRequiredVersion.m */; };
+		28EC2603184EABF50061C3B2 /* XcodeRequiredVersion.m in Sources */ = {isa = PBXBuildFile; fileRef = 28EC2601184EABF50061C3B2 /* XcodeRequiredVersion.m */; };
+		3892D7591815ACE200E68652 /* EventGenerator.h in Headers */ = {isa = PBXBuildFile; fileRef = 3892D7571815ACE200E68652 /* EventGenerator.h */; };
+		3892D75A1815ACE200E68652 /* EventGenerator.h in Headers */ = {isa = PBXBuildFile; fileRef = 3892D7571815ACE200E68652 /* EventGenerator.h */; };
+		3892D75B1815ACE200E68652 /* EventGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 3892D7581815ACE200E68652 /* EventGenerator.m */; };
+		3892D75C1815ACE200E68652 /* EventGenerator.m in Sources */ = {isa = PBXBuildFile; fileRef = 3892D7581815ACE200E68652 /* EventGenerator.m */; };
+		90F7485418E4FAFF00600D5C /* SenIsSuperclassOfClassPerformanceFix.h in Headers */ = {isa = PBXBuildFile; fileRef = 90F7485218E4FAFF00600D5C /* SenIsSuperclassOfClassPerformanceFix.h */; };
+		90F7485518E4FAFF00600D5C /* SenIsSuperclassOfClassPerformanceFix.h in Headers */ = {isa = PBXBuildFile; fileRef = 90F7485218E4FAFF00600D5C /* SenIsSuperclassOfClassPerformanceFix.h */; };
+		90F7485618E4FAFF00600D5C /* SenIsSuperclassOfClassPerformanceFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 90F7485318E4FAFF00600D5C /* SenIsSuperclassOfClassPerformanceFix.m */; };
+		90F7485718E4FAFF00600D5C /* SenIsSuperclassOfClassPerformanceFix.m in Sources */ = {isa = PBXBuildFile; fileRef = 90F7485318E4FAFF00600D5C /* SenIsSuperclassOfClassPerformanceFix.m */; };
+		AA318BEA17E9B43000BF159E /* XCTest.h in Headers */ = {isa = PBXBuildFile; fileRef = AA318BE917E9B43000BF159E /* XCTest.h */; };
+		AA318BEB17E9B43000BF159E /* XCTest.h in Headers */ = {isa = PBXBuildFile; fileRef = AA318BE917E9B43000BF159E /* XCTest.h */; };
+		CC839AB91B433F7C007A4EC1 /* OtestShimTests.m in Sources */ = {isa = PBXBuildFile; fileRef = CC839AB71B433F7C007A4EC1 /* OtestShimTests.m */; };
+		CC839ABC1B434074007A4EC1 /* otest-shim.m in Sources */ = {isa = PBXBuildFile; fileRef = 283CCA9916C2EE4C00F2E343 /* otest-shim.m */; };
+		CC839ABD1B4344BF007A4EC1 /* otest-shim-osx.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 282BFE19171602C60022F9FF /* otest-shim-osx.dylib */; };
+		CC8D7759196623160035CC60 /* NSInvocationInSetFix.h in Headers */ = {isa = PBXBuildFile; fileRef = CC8D7757196623160035CC60 /* NSInvocationInSetFix.h */; };
+		CC8D775A196623160035CC60 /* NSInvocationInSetFix.h in Headers */ = {isa = PBXBuildFile; fileRef = CC8D7757196623160035CC60 /* NSInvocationInSetFix.h */; };
+		CC8D775B196623160035CC60 /* NSInvocationInSetFix.m in Sources */ = {isa = PBXBuildFile; fileRef = CC8D7758196623160035CC60 /* NSInvocationInSetFix.m */; };
+		CC8D775C196623160035CC60 /* NSInvocationInSetFix.m in Sources */ = {isa = PBXBuildFile; fileRef = CC8D7758196623160035CC60 /* NSInvocationInSetFix.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		282BFE19171602C60022F9FF /* otest-shim-osx.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "otest-shim-osx.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
+		282BFE1A171602C60022F9FF /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
+		282BFE1D171602C60022F9FF /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
+		282BFE1E171602C60022F9FF /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
+		282BFE1F171602C60022F9FF /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		282BFE29171602F80022F9FF /* otest-shim-osx.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "otest-shim-osx.xcconfig"; sourceTree = "<group>"; };
+		2839BE5E183FEB6F000D7BEC /* SenTestClassEnumeratorFix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SenTestClassEnumeratorFix.h; sourceTree = "<group>"; };
+		2839BE5F183FEB6F000D7BEC /* SenTestClassEnumeratorFix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SenTestClassEnumeratorFix.m; sourceTree = "<group>"; };
+		2839BE891843CCFF000D7BEC /* SenTestCaseInvokeTestFix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SenTestCaseInvokeTestFix.h; sourceTree = "<group>"; };
+		2839BE8A1843CCFF000D7BEC /* SenTestCaseInvokeTestFix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SenTestCaseInvokeTestFix.m; sourceTree = "<group>"; };
+		283CCA8C16C2EE4C00F2E343 /* otest-shim-ios.dylib */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = "otest-shim-ios.dylib"; sourceTree = BUILT_PRODUCTS_DIR; };
+		283CCA9416C2EE4C00F2E343 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		283CCA9716C2EE4C00F2E343 /* otest-shim-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "otest-shim-Prefix.pch"; sourceTree = "<group>"; };
+		283CCA9916C2EE4C00F2E343 /* otest-shim.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "otest-shim.m"; sourceTree = "<group>"; };
+		2866077318348676000ACB87 /* dyld_priv.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = dyld_priv.h; sourceTree = "<group>"; };
+		2866077418348676000ACB87 /* dyld-interposing.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "dyld-interposing.h"; sourceTree = "<group>"; };
+		2887CC3F181E0D9200B0D049 /* DuplicateTestNameFix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DuplicateTestNameFix.h; sourceTree = "<group>"; };
+		2887CC40181E0D9200B0D049 /* DuplicateTestNameFix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DuplicateTestNameFix.m; sourceTree = "<group>"; };
+		2887CC45181E145D00B0D049 /* TestingFramework.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TestingFramework.h; sourceTree = "<group>"; };
+		2887CC46181E145D00B0D049 /* TestingFramework.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TestingFramework.m; sourceTree = "<group>"; };
+		28897FC7173E50F9004BA024 /* Swizzle.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Swizzle.h; sourceTree = "<group>"; };
+		28897FC8173E50F9004BA024 /* Swizzle.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Swizzle.m; sourceTree = "<group>"; };
+		28E28FB317968EC50072376C /* ReporterEvents.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReporterEvents.h; sourceTree = "<group>"; };
+		28E44D501811024F00211BD5 /* ParseTestName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ParseTestName.h; sourceTree = "<group>"; };
+		28E44D511811024F00211BD5 /* ParseTestName.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ParseTestName.m; sourceTree = "<group>"; };
+		28E9B98216C2F2D400A52E4D /* otest-shim-ios.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "otest-shim-ios.xcconfig"; sourceTree = "<group>"; };
+		28EC2601184EABF50061C3B2 /* XcodeRequiredVersion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XcodeRequiredVersion.m; sourceTree = "<group>"; };
+		3892D7571815ACE200E68652 /* EventGenerator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EventGenerator.h; sourceTree = "<group>"; };
+		3892D7581815ACE200E68652 /* EventGenerator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EventGenerator.m; sourceTree = "<group>"; };
+		90F7485218E4FAFF00600D5C /* SenIsSuperclassOfClassPerformanceFix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SenIsSuperclassOfClassPerformanceFix.h; sourceTree = "<group>"; };
+		90F7485318E4FAFF00600D5C /* SenIsSuperclassOfClassPerformanceFix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SenIsSuperclassOfClassPerformanceFix.m; sourceTree = "<group>"; };
+		AA318BE917E9B43000BF159E /* XCTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XCTest.h; sourceTree = "<group>"; };
+		CC839AB61B433F7C007A4EC1 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		CC839AB71B433F7C007A4EC1 /* OtestShimTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OtestShimTests.m; sourceTree = "<group>"; };
+		CC839ABB1B433FB4007A4EC1 /* otest-shim.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "otest-shim.h"; sourceTree = "<group>"; };
+		CC8D7757196623160035CC60 /* NSInvocationInSetFix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NSInvocationInSetFix.h; sourceTree = "<group>"; };
+		CC8D7758196623160035CC60 /* NSInvocationInSetFix.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NSInvocationInSetFix.m; sourceTree = "<group>"; };
+		CC98B9981B3E10CB009DCE15 /* otest-shim.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = "otest-shim.xcconfig"; sourceTree = "<group>"; };
+		CCFC5E201B433C1B00C03A8A /* otest-shim-tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "otest-shim-tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		282BFE16171602C60022F9FF /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				282BFE1B171602C60022F9FF /* Cocoa.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		283CCA8916C2EE4C00F2E343 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28E9B9DF16C32E9A00A52E4D /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CCFC5E1D1B433C1B00C03A8A /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CC839ABD1B4344BF007A4EC1 /* otest-shim-osx.dylib in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		282BFE1C171602C60022F9FF /* Other Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				282BFE1D171602C60022F9FF /* AppKit.framework */,
+				282BFE1E171602C60022F9FF /* CoreData.framework */,
+				282BFE1F171602C60022F9FF /* Foundation.framework */,
+			);
+			name = "Other Frameworks";
+			sourceTree = "<group>";
+		};
+		283CCA8316C2EE4C00F2E343 = {
+			isa = PBXGroup;
+			children = (
+				CC98B9981B3E10CB009DCE15 /* otest-shim.xcconfig */,
+				28E9B98216C2F2D400A52E4D /* otest-shim-ios.xcconfig */,
+				282BFE29171602F80022F9FF /* otest-shim-osx.xcconfig */,
+				28897FC6173E50F9004BA024 /* Common */,
+				283CCA9516C2EE4C00F2E343 /* otest-shim */,
+				CC839AB51B433F7C007A4EC1 /* otest-shim-tests */,
+				283CCA8E16C2EE4C00F2E343 /* Frameworks */,
+				283CCA8D16C2EE4C00F2E343 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		283CCA8D16C2EE4C00F2E343 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				283CCA8C16C2EE4C00F2E343 /* otest-shim-ios.dylib */,
+				282BFE19171602C60022F9FF /* otest-shim-osx.dylib */,
+				CCFC5E201B433C1B00C03A8A /* otest-shim-tests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		283CCA8E16C2EE4C00F2E343 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				283CCA9416C2EE4C00F2E343 /* Foundation.framework */,
+				282BFE1A171602C60022F9FF /* Cocoa.framework */,
+				282BFE1C171602C60022F9FF /* Other Frameworks */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		283CCA9516C2EE4C00F2E343 /* otest-shim */ = {
+			isa = PBXGroup;
+			children = (
+				283CCA9916C2EE4C00F2E343 /* otest-shim.m */,
+				2839BE891843CCFF000D7BEC /* SenTestCaseInvokeTestFix.h */,
+				2839BE8A1843CCFF000D7BEC /* SenTestCaseInvokeTestFix.m */,
+				2839BE5E183FEB6F000D7BEC /* SenTestClassEnumeratorFix.h */,
+				2839BE5F183FEB6F000D7BEC /* SenTestClassEnumeratorFix.m */,
+				283CCA9616C2EE4C00F2E343 /* Supporting Files */,
+			);
+			path = "otest-shim";
+			sourceTree = "<group>";
+		};
+		283CCA9616C2EE4C00F2E343 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				283CCA9716C2EE4C00F2E343 /* otest-shim-Prefix.pch */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		28897FC6173E50F9004BA024 /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				2887CC3F181E0D9200B0D049 /* DuplicateTestNameFix.h */,
+				2887CC40181E0D9200B0D049 /* DuplicateTestNameFix.m */,
+				2866077418348676000ACB87 /* dyld-interposing.h */,
+				2866077318348676000ACB87 /* dyld_priv.h */,
+				3892D7571815ACE200E68652 /* EventGenerator.h */,
+				3892D7581815ACE200E68652 /* EventGenerator.m */,
+				CC8D7757196623160035CC60 /* NSInvocationInSetFix.h */,
+				CC8D7758196623160035CC60 /* NSInvocationInSetFix.m */,
+				28E44D501811024F00211BD5 /* ParseTestName.h */,
+				28E44D511811024F00211BD5 /* ParseTestName.m */,
+				28E28FB317968EC50072376C /* ReporterEvents.h */,
+				90F7485218E4FAFF00600D5C /* SenIsSuperclassOfClassPerformanceFix.h */,
+				90F7485318E4FAFF00600D5C /* SenIsSuperclassOfClassPerformanceFix.m */,
+				28897FC7173E50F9004BA024 /* Swizzle.h */,
+				28897FC8173E50F9004BA024 /* Swizzle.m */,
+				2887CC45181E145D00B0D049 /* TestingFramework.h */,
+				2887CC46181E145D00B0D049 /* TestingFramework.m */,
+				28EC2601184EABF50061C3B2 /* XcodeRequiredVersion.m */,
+				AA318BE917E9B43000BF159E /* XCTest.h */,
+			);
+			name = Common;
+			path = ../Common;
+			sourceTree = "<group>";
+		};
+		CC839AB51B433F7C007A4EC1 /* otest-shim-tests */ = {
+			isa = PBXGroup;
+			children = (
+				CC839ABB1B433FB4007A4EC1 /* otest-shim.h */,
+				CC839AB71B433F7C007A4EC1 /* OtestShimTests.m */,
+				CC839ABA1B433F86007A4EC1 /* Supporting Files */,
+			);
+			path = "otest-shim-tests";
+			sourceTree = "<group>";
+		};
+		CC839ABA1B433F86007A4EC1 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				CC839AB61B433F7C007A4EC1 /* Info.plist */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		282BFE17171602C60022F9FF /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				AA318BEB17E9B43000BF159E /* XCTest.h in Headers */,
+				CC8D775A196623160035CC60 /* NSInvocationInSetFix.h in Headers */,
+				28E44D531811024F00211BD5 /* ParseTestName.h in Headers */,
+				2887CC48181E145D00B0D049 /* TestingFramework.h in Headers */,
+				2839BE8C1843CCFF000D7BEC /* SenTestCaseInvokeTestFix.h in Headers */,
+				3892D75A1815ACE200E68652 /* EventGenerator.h in Headers */,
+				28897FCA173E50F9004BA024 /* Swizzle.h in Headers */,
+				28E28FB517968EC50072376C /* ReporterEvents.h in Headers */,
+				90F7485518E4FAFF00600D5C /* SenIsSuperclassOfClassPerformanceFix.h in Headers */,
+				2839BE61183FEB6F000D7BEC /* SenTestClassEnumeratorFix.h in Headers */,
+				2887CC42181E0D9200B0D049 /* DuplicateTestNameFix.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		283CCA8A16C2EE4C00F2E343 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				28E44D521811024F00211BD5 /* ParseTestName.h in Headers */,
+				CC8D7759196623160035CC60 /* NSInvocationInSetFix.h in Headers */,
+				3892D7591815ACE200E68652 /* EventGenerator.h in Headers */,
+				2887CC47181E145D00B0D049 /* TestingFramework.h in Headers */,
+				2839BE8B1843CCFF000D7BEC /* SenTestCaseInvokeTestFix.h in Headers */,
+				28897FC9173E50F9004BA024 /* Swizzle.h in Headers */,
+				28E28FB417968EC50072376C /* ReporterEvents.h in Headers */,
+				AA318BEA17E9B43000BF159E /* XCTest.h in Headers */,
+				90F7485418E4FAFF00600D5C /* SenIsSuperclassOfClassPerformanceFix.h in Headers */,
+				2839BE60183FEB6F000D7BEC /* SenTestClassEnumeratorFix.h in Headers */,
+				2887CC41181E0D9200B0D049 /* DuplicateTestNameFix.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		282BFE18171602C60022F9FF /* otest-shim-osx */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 282BFE28171602C60022F9FF /* Build configuration list for PBXNativeTarget "otest-shim-osx" */;
+			buildPhases = (
+				282BFE15171602C60022F9FF /* Sources */,
+				282BFE16171602C60022F9FF /* Frameworks */,
+				282BFE17171602C60022F9FF /* Headers */,
+				28AA035018564F2F00854B0E /* Run Script (assert_universal) */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "otest-shim-osx";
+			productName = "otest-shim-osx";
+			productReference = 282BFE19171602C60022F9FF /* otest-shim-osx.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		283CCA8B16C2EE4C00F2E343 /* otest-shim-ios */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 283CCA9D16C2EE4C00F2E343 /* Build configuration list for PBXNativeTarget "otest-shim-ios" */;
+			buildPhases = (
+				283CCA8816C2EE4C00F2E343 /* Sources */,
+				283CCA8916C2EE4C00F2E343 /* Frameworks */,
+				283CCA8A16C2EE4C00F2E343 /* Headers */,
+				28AA034F18564F1D00854B0E /* Run Script (assert_universal) */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "otest-shim-ios";
+			productName = "otest-shim";
+			productReference = 283CCA8C16C2EE4C00F2E343 /* otest-shim-ios.dylib */;
+			productType = "com.apple.product-type.library.dynamic";
+		};
+		CCFC5E1F1B433C1B00C03A8A /* otest-shim-tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CCFC5E291B433C1B00C03A8A /* Build configuration list for PBXNativeTarget "otest-shim-tests" */;
+			buildPhases = (
+				CCFC5E1C1B433C1B00C03A8A /* Sources */,
+				CCFC5E1D1B433C1B00C03A8A /* Frameworks */,
+				CCFC5E1E1B433C1B00C03A8A /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "otest-shim-tests";
+			productName = "otest-shim-osx-tests";
+			productReference = CCFC5E201B433C1B00C03A8A /* otest-shim-tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		283CCA8416C2EE4C00F2E343 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0630;
+				ORGANIZATIONNAME = "Facebook, Inc.";
+				TargetAttributes = {
+					CCFC5E1F1B433C1B00C03A8A = {
+						CreatedOnToolsVersion = 6.3.2;
+					};
+				};
+			};
+			buildConfigurationList = 283CCA8716C2EE4C00F2E343 /* Build configuration list for PBXProject "otest-shim" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 283CCA8316C2EE4C00F2E343;
+			productRefGroup = 283CCA8D16C2EE4C00F2E343 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				283CCA8B16C2EE4C00F2E343 /* otest-shim-ios */,
+				282BFE18171602C60022F9FF /* otest-shim-osx */,
+				CCFC5E1F1B433C1B00C03A8A /* otest-shim-tests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		CCFC5E1E1B433C1B00C03A8A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		28AA034F18564F1D00854B0E /* Run Script (assert_universal) */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script (assert_universal)";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PROJECT_DIR}\"/../scripts/RunScripts/assert_universal.sh";
+			showEnvVarsInLog = 0;
+		};
+		28AA035018564F2F00854B0E /* Run Script (assert_universal) */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Run Script (assert_universal)";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PROJECT_DIR}\"/../scripts/RunScripts/assert_universal.sh";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		282BFE15171602C60022F9FF /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2887CC44181E0D9200B0D049 /* DuplicateTestNameFix.m in Sources */,
+				2839BE63183FEB6F000D7BEC /* SenTestClassEnumeratorFix.m in Sources */,
+				90F7485718E4FAFF00600D5C /* SenIsSuperclassOfClassPerformanceFix.m in Sources */,
+				2839BE8E1843CCFF000D7BEC /* SenTestCaseInvokeTestFix.m in Sources */,
+				CC8D775C196623160035CC60 /* NSInvocationInSetFix.m in Sources */,
+				2887CC4A181E145D00B0D049 /* TestingFramework.m in Sources */,
+				3892D75C1815ACE200E68652 /* EventGenerator.m in Sources */,
+				282BFE2B1716044C0022F9FF /* otest-shim.m in Sources */,
+				28E44D551811024F00211BD5 /* ParseTestName.m in Sources */,
+				28EC2603184EABF50061C3B2 /* XcodeRequiredVersion.m in Sources */,
+				28897FCC173E50F9004BA024 /* Swizzle.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		283CCA8816C2EE4C00F2E343 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2887CC43181E0D9200B0D049 /* DuplicateTestNameFix.m in Sources */,
+				2839BE62183FEB6F000D7BEC /* SenTestClassEnumeratorFix.m in Sources */,
+				90F7485618E4FAFF00600D5C /* SenIsSuperclassOfClassPerformanceFix.m in Sources */,
+				2839BE8D1843CCFF000D7BEC /* SenTestCaseInvokeTestFix.m in Sources */,
+				CC8D775B196623160035CC60 /* NSInvocationInSetFix.m in Sources */,
+				2887CC49181E145D00B0D049 /* TestingFramework.m in Sources */,
+				3892D75B1815ACE200E68652 /* EventGenerator.m in Sources */,
+				283CCA9A16C2EE4C00F2E343 /* otest-shim.m in Sources */,
+				28E44D541811024F00211BD5 /* ParseTestName.m in Sources */,
+				28EC2602184EABF50061C3B2 /* XcodeRequiredVersion.m in Sources */,
+				28897FCB173E50F9004BA024 /* Swizzle.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CCFC5E1C1B433C1B00C03A8A /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CC839ABC1B434074007A4EC1 /* otest-shim.m in Sources */,
+				CC839AB91B433F7C007A4EC1 /* OtestShimTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		282BFE26171602C60022F9FF /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 282BFE29171602F80022F9FF /* otest-shim-osx.xcconfig */;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_PREFIX_HEADER = "otest-shim/otest-shim-Prefix.pch";
+				PRODUCT_NAME = "otest-shim-osx";
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		282BFE27171602C60022F9FF /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 282BFE29171602F80022F9FF /* otest-shim-osx.xcconfig */;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_PREFIX_HEADER = "otest-shim/otest-shim-Prefix.pch";
+				PRODUCT_NAME = "otest-shim-osx";
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		283CCA9B16C2EE4C00F2E343 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+			};
+			name = Debug;
+		};
+		283CCA9C16C2EE4C00F2E343 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+			};
+			name = Release;
+		};
+		283CCA9E16C2EE4C00F2E343 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 28E9B98216C2F2D400A52E4D /* otest-shim-ios.xcconfig */;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_PREFIX_HEADER = "otest-shim/otest-shim-Prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				PRODUCT_NAME = "otest-shim-ios";
+			};
+			name = Debug;
+		};
+		283CCA9F16C2EE4C00F2E343 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 28E9B98216C2F2D400A52E4D /* otest-shim-ios.xcconfig */;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				GCC_PREFIX_HEADER = "otest-shim/otest-shim-Prefix.pch";
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
+				PRODUCT_NAME = "otest-shim-ios";
+			};
+			name = Release;
+		};
+		CCFC5E2A1B433C1B00C03A8A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC98B9981B3E10CB009DCE15 /* otest-shim.xcconfig */;
+			buildSettings = {
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "otest-shim-tests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		CCFC5E2B1B433C1B00C03A8A /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CC98B9981B3E10CB009DCE15 /* otest-shim.xcconfig */;
+			buildSettings = {
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				INFOPLIST_FILE = "otest-shim-tests/Info.plist";
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		282BFE28171602C60022F9FF /* Build configuration list for PBXNativeTarget "otest-shim-osx" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				282BFE26171602C60022F9FF /* Debug */,
+				282BFE27171602C60022F9FF /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		283CCA8716C2EE4C00F2E343 /* Build configuration list for PBXProject "otest-shim" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				283CCA9B16C2EE4C00F2E343 /* Debug */,
+				283CCA9C16C2EE4C00F2E343 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		283CCA9D16C2EE4C00F2E343 /* Build configuration list for PBXNativeTarget "otest-shim-ios" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				283CCA9E16C2EE4C00F2E343 /* Debug */,
+				283CCA9F16C2EE4C00F2E343 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CCFC5E291B433C1B00C03A8A /* Build configuration list for PBXNativeTarget "otest-shim-tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CCFC5E2A1B433C1B00C03A8A /* Debug */,
+				CCFC5E2B1B433C1B00C03A8A /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 283CCA8416C2EE4C00F2E343 /* Project object */;
+}

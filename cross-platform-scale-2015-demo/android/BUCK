@@ -1,0 +1,18 @@
+# Copyright 2015-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+
+android_binary(
+  name = 'demo-app',
+  manifest = 'AndroidManifest.xml',
+  keystore = '//android/keystores:debug',
+  deps = [
+    '//android/java/com/facebook/buck/demo:lib',
+  ],
+)
+
+project_config(
+  src_target = ':demo-app',
+)

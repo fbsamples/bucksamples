@@ -1,0 +1,24 @@
+# Copyright 2015-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+
+cxx_library(
+  name = 'jni',
+  srcs = glob(['*.cpp']),
+  soname = 'libjni.so',
+  compiler_flags = [
+    '-fvisibility=hidden',
+  ],
+  deps = [
+    '//common:hello',
+  ],
+  visibility = [
+    '//android/java/com/facebook/buck/demo:lib',
+  ],
+)
+
+project_config(
+  src_target = ':jni'
+)

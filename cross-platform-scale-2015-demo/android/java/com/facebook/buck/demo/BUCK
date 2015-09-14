@@ -1,0 +1,21 @@
+# Copyright 2015-present, Facebook, Inc.
+# All rights reserved.
+#
+# This source code is licensed under the license found in the
+# LICENSE file in the root directory of this source tree.
+
+android_library(
+  name = 'lib',
+  srcs = glob(['*.java']),
+  deps = [
+    '//android/resources:res',
+    '//android/cxx:jni',
+  ],
+  visibility = [
+    '//android:demo-app',
+  ],
+)
+
+project_config(
+  src_target = ':lib',
+)
