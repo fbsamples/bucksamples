@@ -8,8 +8,7 @@
 
 #import "AppDelegate.h"
 #import "AppViewController.h"
-
-#import "common/hello.h"
+#import "BuckDemoApp-Swift.h"
 
 @interface AppDelegate ()
 
@@ -21,7 +20,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    self.helloString = [NSString stringWithUTF8String:helloString()];
+    self.helloString = [SwiftGreeter sayHello];
 
     UIViewController *viewController = [[AppViewController alloc] initWithHelloString:_helloString];
 

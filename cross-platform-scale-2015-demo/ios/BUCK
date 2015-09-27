@@ -27,7 +27,9 @@ apple_binary(
   ]),
   srcs = glob([
     '*.m',
+    '*.swift',
   ]),
+  swift_objc_bridging_header = 'BuckDemoApp-Bridging-Header.h',
   frameworks = [
     '$SDKROOT/System/Library/Frameworks/UIKit.framework',
     '$SDKROOT/System/Library/Frameworks/Foundation.framework',
