@@ -1,0 +1,9 @@
+# Buck
+/buck-out
+/buck-cache
+/local.properties
+/.buckconfig.local
+/.buckd
+
+# OS X
+.DS_Store
