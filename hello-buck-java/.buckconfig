@@ -1,0 +1,7 @@
+[alias]
+  hello_buck_java = //com/facebook/buck/demo:hello-buck-java
+
+[java]
+  src_roots = /
+  source_level = 6
+  target_level = 6
