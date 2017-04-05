@@ -7,6 +7,10 @@
 android_library(
   name = 'lib',
   srcs = glob(['*.java']),
+  resources = glob([
+      'resources/**',
+  ]),
+  resources_root = 'resources',
   deps = [
     '//android/resources:res',
     '//android/cxx:jni',

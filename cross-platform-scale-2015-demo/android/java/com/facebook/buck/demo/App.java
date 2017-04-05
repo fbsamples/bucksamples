@@ -12,6 +12,8 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import java.io.InputStream;
+
 public class App extends Activity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -23,10 +25,15 @@ public class App extends Activity {
     try {
       String message = new Hello().getHelloString();
       textView.setText(message);
-    } catch (Exception e) {
+    } catch (Error e) {
       textView.setText(String.format(
               "Unable to load jni library! %s",
               e.getMessage()));
+    }
+
+    InputStream stream = App.class.getResourceAsStream("/default.json");
+    if (stream == null) {
+      throw new IllegalStateException("Failed to load resource /default.json");
     }
   }
 }
