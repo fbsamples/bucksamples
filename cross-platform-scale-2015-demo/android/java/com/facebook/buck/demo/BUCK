@@ -14,10 +14,16 @@ android_library(
   deps = [
     '//android/resources:res',
     '//android/cxx:jni',
+    ':libphone',
   ],
   visibility = [
     '//android:demo-app',
   ],
+)
+
+prebuilt_jar(
+  name = 'libphone',
+  binary_jar = 'libphonenumber.jar',
 )
 
 project_config(
