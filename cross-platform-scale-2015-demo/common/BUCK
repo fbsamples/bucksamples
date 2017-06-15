@@ -12,7 +12,3 @@ cxx_library(
     'PUBLIC',
   ],
 )
-
-project_config(
-  src_target = ':hello'
-)

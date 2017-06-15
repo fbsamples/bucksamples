@@ -12,7 +12,3 @@ android_binary(
     '//android/java/com/facebook/buck/demo:lib',
   ],
 )
-
-project_config(
-  src_target = ':demo-app',
-)
