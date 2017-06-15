@@ -18,7 +18,3 @@ cxx_library(
     '//android/java/com/facebook/buck/demo:lib',
   ],
 )
-
-project_config(
-  src_target = ':jni'
-)
