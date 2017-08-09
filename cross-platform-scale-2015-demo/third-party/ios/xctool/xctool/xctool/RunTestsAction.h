@@ -24,7 +24,7 @@
  * e.g. ['Cls1/test1', 'Cls1/test2', 'Cls2/test1'] with bucketSize=2 woudl be
  * broken into [['Cls1/test1', 'Cls1/test2'], ['Cls2/test1']].
  */
-NSArray *BucketizeTestCasesByTestCase(NSArray *testCases, int bucketSize);
+NSArray *BucketizeTestCasesByTestCase(NSArray *testCases, NSUInteger bucketSize);
 
 /**
  * Break test cases into groups of `bucketSize` test classes.
@@ -33,7 +33,7 @@ NSArray *BucketizeTestCasesByTestCase(NSArray *testCases, int bucketSize);
  * with bucketSize=2 would be broken into [['Cls1/test1', 'Cls1/test2',
  * 'Cls1/test3', 'Cls2/test2'], ['Cls3/test1']].
  */
-NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize);
+NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, NSUInteger bucketSize);
 
 typedef NS_ENUM(NSInteger, BucketBy) {
   // Bucket by individual test case (the most granular option).  Test cases
@@ -54,12 +54,16 @@ typedef NS_ENUM(NSInteger, BucketBy) {
 
 @property (nonatomic, assign) BOOL freshSimulator;
 @property (nonatomic, assign) BOOL resetSimulator;
+@property (nonatomic, assign) BOOL newSimulatorInstance;
+@property (nonatomic, assign) BOOL noResetSimulatorOnFailure;
 @property (nonatomic, assign) BOOL freshInstall;
 @property (nonatomic, assign) BOOL parallelize;
 @property (nonatomic, assign) BOOL failOnEmptyTestBundles;
 @property (nonatomic, assign) BOOL listTestsOnly;
+@property (nonatomic, assign) BOOL waitForDebugger;
 @property (nonatomic, copy) NSString *testSDK;
 @property (nonatomic, strong) NSMutableArray *onlyList;
+@property (nonatomic, strong) NSMutableArray *omitList;
 @property (nonatomic, strong) NSMutableArray *logicTests;
 @property (nonatomic, strong) NSMutableDictionary *appTests;
 @property (nonatomic, copy) NSString *targetedDeviceFamily;

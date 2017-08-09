@@ -18,7 +18,9 @@
 #import "TestActionInternal.h"
 
 #import "BuildTestsAction.h"
+#import "Options.h"
 #import "RunTestsAction.h"
+#import "XCToolUtil.h"
 
 @interface TestAction ()
 
@@ -49,6 +51,12 @@
      @"SPEC is TARGET[:Class/case[,Class2/case2]]; use * when specifying class or case prefix."
                        paramName:@"SPEC"
                            mapTo:@selector(addOnly:)],
+    [Action actionOptionWithName:@"omit"
+                         aliases:nil
+                     description:
+     @"SPEC is TARGET[:Class/case[,Class2/case2]]; use * when specifying class or case prefix."
+                       paramName:@"SPEC"
+                           mapTo:@selector(addOmit:)],
     [Action actionOptionWithName:@"skip-deps"
                          aliases:nil
                      description:@"Only build the target, not its dependencies"
@@ -63,6 +71,16 @@
                      description:
      @"Reset simulator content and settings and restart it before running every app test run."
                          setFlag:@selector(setResetSimulator:)],
+    [Action actionOptionWithName:@"newSimulatorInstance"
+                         aliases:nil
+                     description:
+     @"Create new simulator instance for each application test target"
+                         setFlag:@selector(setNewSimulatorInstance:)],
+    [Action actionOptionWithName:@"noResetSimulatorOnFailure"
+                         aliases:nil
+                     description:
+     @"Do not reset simulator content and settings if running failed."
+                         setFlag:@selector(setNoResetSimulatorOnFailure:)],
     [Action actionOptionWithName:@"freshInstall"
                          aliases:nil
                      description:
@@ -95,6 +113,10 @@
                          aliases:nil
                      description:@"Skip actual test running and list them only."
                          setFlag:@selector(setListTestsOnly:)],
+    [Action actionOptionWithName:@"waitForDebugger"
+                         aliases:nil
+                     description:@"Spawn tests but wait for debugger to attach."
+                         setFlag:@selector(setWaitForDebugger:)],
     [Action actionOptionWithName:@"testTimeout"
                          aliases:nil
                      description:
@@ -128,9 +150,24 @@
   [_runTestsAction setResetSimulator:resetSimulator];
 }
 
+- (void)setNewSimulatorInstance:(BOOL)newSimulatorInstance
+{
+  [_runTestsAction setNewSimulatorInstance:newSimulatorInstance];
+}
+
+- (void)setNoResetSimulatorOnFailure:(BOOL)noResetSimulatorOnFailure
+{
+  [_runTestsAction setNoResetSimulatorOnFailure:noResetSimulatorOnFailure];
+}
+
 - (void)setFreshInstall:(BOOL)freshInstall
 {
   [_runTestsAction setFreshInstall:freshInstall];
+}
+
+- (void)setWaitForDebugger:(BOOL)waitForDebugger
+{
+  [_runTestsAction setWaitForDebugger:waitForDebugger];
 }
 
 - (void)setParallelize:(BOOL)parallelize
@@ -181,9 +218,22 @@
   [_runTestsAction.onlyList addObject:argument];
 }
 
+- (void)addOmit:(NSString *)argument
+{
+  // build-tests takes only a target argument, where run-tests takes Target:Class/method.
+  NSString *buildTestsOmitArg = [argument componentsSeparatedByString:@":"][0];
+  [_buildTestsAction.omitList addObject:buildTestsOmitArg];
+  [_runTestsAction.omitList addObject:argument];
+}
+
 - (NSArray *)onlyList
 {
   return _buildTestsAction.onlyList;
+}
+
+- (NSArray *)omitList
+{
+  return _buildTestsAction.omitList;
 }
 
 - (BOOL)skipDependencies

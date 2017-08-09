@@ -20,9 +20,21 @@
 
 @property (nonatomic, copy) NSDictionary *buildSettings;
 
+
+/*
+ * `SimulatorInfo` needs to be prepared before being used.
+ *
+ * This method should be called on the main thread due to 
+ * Xcode internals expectations. Doing it while performing
+ * xctool actions may result in a deadlock so this preparation
+ * should be done as early as possible.
+ */
++ (void)prepare;
+
 - (void)setCpuType:(cpu_type_t)cpuType;
 - (void)setDeviceName:(NSString *)deviceName;
 - (void)setOSVersion:(NSString *)OSVersion;
+- (void)setDeviceUDID:(NSUUID *)deviceUDID;
 
 - (cpu_type_t)simulatedCpuType;
 - (NSString *)simulatedArchitecture;
@@ -38,21 +50,16 @@
 - (NSString *)simulatedSdkName;
 - (NSNumber *)launchTimeout;
 
-- (DTiPhoneSimulatorSystemRoot *)systemRootForSimulatedSdk;
-
 - (NSMutableDictionary *)simulatorLaunchEnvironment;
 
 - (NSString *)testHostPath;
 - (NSString *)productBundlePath;
 
-+ (NSArray *)availableDevices;
-+ (NSString *)deviceNameForAlias:(NSString *)deviceAlias;
-+ (BOOL)isDeviceAvailableWithAlias:(NSString *)deviceName;
-+ (BOOL)isSdkVersion:(NSString *)sdkVersion supportedByDevice:(NSString *)deviceName;
-+ (NSString *)sdkVersionForOSVersion:(NSString *)osVersion;
-+ (NSArray *)availableSdkVersions;
-+ (NSArray *)sdksSupportedByDevice:(NSString *)deviceName;
-+ (cpu_type_t)cpuTypeForDevice:(NSString *)deviceName;
-+ (NSString *)baseVersionForSDKShortVersion:(NSString *)shortVersionString;
+- (NSArray *)availableDevices;
+- (NSString *)deviceNameForAlias:(NSString *)deviceAlias;
+- (BOOL)isDeviceAvailableWithAlias:(NSString *)deviceName;
+- (BOOL)isSdkVersion:(NSString *)sdkVersion supportedByDevice:(NSString *)deviceName;
+- (NSArray *)sdksSupportedByDevice:(NSString *)deviceName;
+- (SimDevice *)deviceWithUDID:(NSUUID *)deviceUDID;
 
 @end
