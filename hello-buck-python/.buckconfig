@@ -1,0 +1,3 @@
+[python]
+  interpreter = /usr/bin/python2.7
+  path_to_pex_executer = /bin/bash

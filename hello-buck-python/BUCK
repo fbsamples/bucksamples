@@ -1,0 +1,12 @@
+python_binary(
+  name = 'hello_buck_python',
+  main = 'hello_buck.py',
+  deps = [
+    ':calc',
+  ],
+)
+
+python_library(
+	name = 'calc',
+	srcs = glob(['calc.py']),
+)
