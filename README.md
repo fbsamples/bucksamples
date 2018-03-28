@@ -13,3 +13,5 @@ for more information.
 
 * @Scale 2015 Cross Platform Demo: `cross-platform-scale-2015-demo`
 * Hello Buck for Java: `hello-buck-java`
+* Hello Buck for C++:  `hello-buck-cxx`
+

@@ -1,0 +1,20 @@
+cxx_binary(
+  name = 'main',
+  srcs = [
+    'hello-buck.cxx',
+  ],
+  deps = [
+    ':hello_string',
+  ],
+)
+
+cxx_library(
+  name = 'hello_string',
+  srcs = [
+    'hello-string.cxx',
+  ],
+  headers = [
+    'hello-string.h',
+  ],
+)
+
