@@ -3,11 +3,11 @@
 
 int main () {
 
-  hello_string * my_object = new hello_string();
+  hello_string * hello = new hello_string();
 
-  printf( "%ld\n", my_object -> get_count() );
+  printf( "Hello, %s\n", hello -> get_string() );
 
-  return ( my_object -> get_count() );
+  return( 0 );
 
 }
 
