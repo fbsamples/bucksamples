@@ -1,0 +1,7 @@
+
+[cxx]
+cxxppflags= -D BUCKSTRING
+
+[cxx#chuck]
+cxxppflags= -U BUCKSTRING
+
