@@ -2,6 +2,6 @@
 [cxx]
 cxxppflags= -D BUCKSTRING
 
-[cxx#chuck]
+[cxx#zuck]
 cxxppflags= -U BUCKSTRING
 

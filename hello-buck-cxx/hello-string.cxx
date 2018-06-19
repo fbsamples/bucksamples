@@ -1,7 +1,7 @@
 #ifdef  BUCKSTRING
 #define HELLOSTRING "Buck"
 #else
-#define HELLOSTRING "Chuck"
+#define HELLOSTRING "Zuck"
 #endif
 
 #include "stdio.h"
