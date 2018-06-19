@@ -3,7 +3,16 @@ To build using buck:
 
     buck build :main
 
-The executable, `main` will be in `./buck-out/gen`.
+To build and run using buck:
+
+    buck run :main
+
+To build and run using the alternative `#zuck` platform defined in
+`.buckconfig`:
+
+    buck run :main
+
+Buck outputs the executable, `main` to `./buck-out/gen`.
 
 You can also build any of the following flavors:
 
