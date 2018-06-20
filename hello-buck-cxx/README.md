@@ -10,7 +10,7 @@ To build and run using buck:
 To build and run using the alternative `#zuck` platform defined in
 `.buckconfig`:
 
-    buck run :main
+    buck run :main#zuck
 
 Buck outputs the executable, `main` to `./buck-out/gen`.
 

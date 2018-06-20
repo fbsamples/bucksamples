@@ -6,7 +6,6 @@ cxx_binary(
   deps = [
     ':hello_string',
   ],
-  default_platform="zuck"
 )
 
 cxx_library(
