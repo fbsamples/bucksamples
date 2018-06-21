@@ -1,12 +1,9 @@
-#ifdef  BUCKSTRING
-#define HELLOSTRING "Buck"
-#else
-#define HELLOSTRING "Chuck"
-#endif
-
 #include "stdio.h"
 #include "hello-string.h"
 
+//
+// HELLOSTRING is defined in .buckconfig
+//
 const char * hello_string::HELLO = HELLOSTRING;
 
 hello_string::hello_string() {};
