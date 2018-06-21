@@ -1,7 +1,7 @@
 
 [cxx]
-cxxppflags= -D BUCKSTRING
+  cxxppflags="-D HELLOSTRING=\"Buck\""
 
 [cxx#other_platform]
-cxxppflags= -U BUCKSTRING
+  cxxppflags="-D HELLOSTRING=\"Chuck\""
 

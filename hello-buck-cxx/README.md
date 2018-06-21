@@ -9,10 +9,10 @@ To build and run using buck:
 
     buck run :main
 
-To build and run using the alternative `#zuck` platform defined in
-`.buckconfig`:
+To build and run using the alternative `#other_platform` platform
+defined in `.buckconfig`:
 
-    buck run :main#zuck
+    buck run :main#other_platform
 
 You can also build any of the following flavors:
 
@@ -23,7 +23,7 @@ You can also build any of the following flavors:
 For a description of these flavors, see the Buck documentation at the
 following URL:
 
-<https://buckbuild.com/rule/cxx_binary.html>
+>  <https://buckbuild.com/rule/cxx_binary.html>
 
 
 **End of README.md**
