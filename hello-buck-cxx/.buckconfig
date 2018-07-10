@@ -1,0 +1,7 @@
+
+[cxx]
+  cxxppflags="-D HELLOSTRING=\"Buck\""
+
+[cxx#other_platform]
+  cxxppflags="-D HELLOSTRING=\"Chuck\""
+
