@@ -7,7 +7,7 @@ with Buck with shared native code.
 
 Make sure you've [installed Buck](https://buckbuild.com/setup/install.html),
 and if you want to use the Android code, make sure you've [setup your
-environment properly](https://buckbuild.com/setup/install.html#locate-android-sdk).
+environment properly](https://buckbuild.com/setup/getting_started.html)
 
 ## Building
 
@@ -17,11 +17,11 @@ You can build the demo applications from the command line!
 
 For Android, build the demo with:
 
-    buck install -r demo_app_android
+    buck install --run demo_app_android
 
 ### iOS
 
-    buck install -r demo_app_ios
+    buck install --run demo_app_ios
 
 ## Project Generation
 
@@ -40,3 +40,4 @@ If you are on Windows, you'll want to run:
 ### iOS
 
     buck project demo_app_ios
+
