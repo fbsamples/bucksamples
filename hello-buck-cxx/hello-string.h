@@ -1,12 +1,14 @@
+#include <string>
+
 class hello_string {
 
   private:
-    static const char * HELLO;
+    static const std::string HELLO;
 
   public:
     hello_string(); 
 
-    const char * get_string();
+    const std::string get_string();
 
 };
 
