@@ -5,3 +5,6 @@
 [cxx#other_platform]
   cxxppflags="-D HELLOSTRING=\"Chuck\""
 
+[parser]
+  default_build_file_syntax = skylark
+

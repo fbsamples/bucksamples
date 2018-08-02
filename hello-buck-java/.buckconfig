@@ -1,3 +1,6 @@
+[parser]
+  default_build_file_syntax = skylark
+
 [alias]
   hello_buck_java = //com/facebook/buck/demo:hello-buck-java
 
