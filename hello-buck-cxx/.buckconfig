@@ -10,3 +10,6 @@
 #
 <?file:future-platform/future-platform.include>
 
+[parser]
+  default_build_file_syntax = skylark
+
