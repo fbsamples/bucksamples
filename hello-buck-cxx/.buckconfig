@@ -1,7 +1,12 @@
-
 [cxx]
   cxxppflags="-D HELLOSTRING=\"Buck\""
 
-[cxx#other_platform]
-  cxxppflags="-D HELLOSTRING=\"Chuck\""
+<file:cxx-other-platform/cxx-other-platform.include>
+
+#
+# Include the following configuration file if it 
+# exists. If the file does not exist, do nothing.
+# (Note the `?` prefix.)
+#
+<?file:future-platform/future-platform.include>
 
