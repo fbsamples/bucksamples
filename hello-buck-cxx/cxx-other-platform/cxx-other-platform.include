@@ -1,0 +1,3 @@
+[cxx#other_platform]
+  cxxppflags="-D HELLOSTRING=\"Chuck\""
+
