@@ -110,7 +110,7 @@
 - (void)publishOutput
 {
   NSAssert(_isStarted, @"Can't publish output if test hasn't started");
-  if (_outputToPublish) {
+  if (_outputToPublish.length) {
     [self publishWithEvent:
       EventDictionaryWithNameAndContent(kReporter_Events_TestOuput,
         @{kReporter_TestOutput_OutputKey:_outputToPublish})
@@ -130,6 +130,9 @@
         kReporter_EndTest_ClassNameKey:_className,
         kReporter_EndTest_MethodNameKey:_methodName,
     })];
+    if (!_outputToPublish.length) {
+      [self appendOutput:@"Test did not run."];
+    }
   }
   if (![self isFinished]) {
     [self publishOutput];
@@ -145,6 +148,11 @@
         kReporter_EndTest_OutputKey:_outputAlreadyPublished,
     })];
   }
+}
+
+- (NSString *)outputAlreadyPublished
+{
+  return [_outputAlreadyPublished copy];
 }
 
 @end

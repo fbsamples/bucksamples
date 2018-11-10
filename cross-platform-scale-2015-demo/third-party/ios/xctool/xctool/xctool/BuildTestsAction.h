@@ -19,6 +19,7 @@
 @interface BuildTestsAction : Action
 
 @property (nonatomic, strong) NSMutableArray *onlyList;
+@property (nonatomic, strong) NSMutableArray *omitList;
 @property (nonatomic, assign) BOOL skipDependencies;
 
 + (BOOL)buildWorkspace:(NSString *)path
@@ -27,6 +28,7 @@
                objRoot:(NSString *)objRoot
                symRoot:(NSString *)symRoot
      sharedPrecompsDir:(NSString *)sharedPrecompsDir
+       derivedDataPath:(NSString *)derivedDataPath
         xcodeArguments:(NSArray *)xcodeArguments
           xcodeCommand:(NSString *)xcodeCommand;
 

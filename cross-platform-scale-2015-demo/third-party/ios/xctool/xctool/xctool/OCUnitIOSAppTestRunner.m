@@ -28,12 +28,12 @@ static const NSInteger kMaxRunTestsAttempts = 3;
 
 @implementation OCUnitIOSAppTestRunner
 
-- (void)runTestsAndFeedOutputTo:(void (^)(NSString *))outputLineBlock
+- (void)runTestsAndFeedOutputTo:(FdOutputLineFeedBlock)outputLineBlock
                    startupError:(NSString **)startupError
                     otherErrors:(NSString **)otherErrors
 {
   NSString *sdkName = _buildSettings[Xcode_SDK_NAME];
-  NSAssert([sdkName hasPrefix:@"iphonesimulator"], @"Unexpected SDK: %@", sdkName);
+  NSAssert([sdkName hasPrefix:@"iphonesimulator"] || [sdkName hasPrefix:@"appletvsimulator"], @"Unexpected SDK: %@", sdkName);
 
   // Sometimes the TEST_HOST will be wrapped in double quotes.
   NSString *testHostPath = [_buildSettings[Xcode_TEST_HOST] stringByTrimmingCharactersInSet:[NSCharacterSet characterSetWithCharactersInString:@"\""]];
@@ -58,22 +58,8 @@ static const NSInteger kMaxRunTestsAttempts = 3;
   NSString *testHostBundleID = testHostInfoPlist[@"CFBundleIdentifier"];
   NSAssert(testHostBundleID != nil, @"Missing 'CFBundleIdentifier' in Info.plist");
 
-  void (^prepareSimulator)(BOOL freshSimulator, BOOL resetSimulator) = ^(BOOL freshSimulator, BOOL resetSimulator) {
+  BOOL (^prepareSimulator)(BOOL freshSimulator, BOOL resetSimulator) = ^(BOOL freshSimulator, BOOL resetSimulator) {
     if (freshSimulator || resetSimulator) {
-      ReportStatusMessageBegin(_reporters,
-                               REPORTER_MESSAGE_INFO,
-                               @"Verifying iOS Simulators...");
-      NSString *verifyError = nil;
-      if (VerifySimulators(&verifyError)) {
-        ReportStatusMessageEnd(_reporters,
-                               REPORTER_MESSAGE_INFO,
-                               @"Verified iOS Simulators...");
-      } else {
-        ReportStatusMessageEnd(_reporters,
-                               REPORTER_MESSAGE_ERROR,
-                               @"Failed to verify iOS Simulators with error: %@", verifyError);
-      }
-
       ReportStatusMessageBegin(_reporters,
                                REPORTER_MESSAGE_INFO,
                                @"Shutting down iOS Simulator...");
@@ -124,10 +110,21 @@ static const NSInteger kMaxRunTestsAttempts = 3;
 
       }
     }
+
+   if (![SimulatorWrapper prepareSimulator:[_simulatorInfo simulatedDevice]
+                      newSimulatorInstance:_newSimulatorInstance
+                                 reporters:_reporters
+                                     error:startupError]) {
+      return NO;
+    }
+
+    return YES;
   };
 
   BOOL (^prepTestEnv)() = ^BOOL() {
-    prepareSimulator(_freshSimulator, _resetSimulator);
+    if (!prepareSimulator(_freshSimulator, _resetSimulator)) {
+      return NO;
+    }
 
     if (_freshInstall) {
       if (![SimulatorWrapper uninstallTestHostBundleID:testHostBundleID
@@ -183,7 +180,7 @@ static const NSInteger kMaxRunTestsAttempts = 3;
 
     // we will reset iOS simulator contents and settings now if it is not done in `prepTestEnv`
     if (!_resetSimulator) {
-      prepareSimulator(YES, YES);
+      prepareSimulator(YES, !_noResetSimulatorOnFailure);
     }
 
     // Sometimes, the test host app installation retries are starting and
@@ -191,10 +188,6 @@ static const NSInteger kMaxRunTestsAttempts = 3;
     // happening. To remedy this, we pause for a second between retries.
     [NSThread sleepForTimeInterval:1];
   }
-
-  ReportStatusMessage(_reporters,
-                      REPORTER_MESSAGE_INFO,
-                      @"Launching test host and running tests ...");
 
   NSArray *appLaunchArgs = nil;
   NSMutableDictionary *appLaunchEnvironment = [_simulatorInfo simulatorLaunchEnvironment];
@@ -216,6 +209,7 @@ static const NSInteger kMaxRunTestsAttempts = 3;
                                                   arguments:appLaunchArgs
                                                 environment:appLaunchEnvironment
                                           feedOutputToBlock:outputLineBlock
+                                                  reporters:_reporters
                                                       error:&error];
 
     if (infraSucceeded) {
@@ -229,7 +223,7 @@ static const NSInteger kMaxRunTestsAttempts = 3;
 
     if (!remainingAttempts) {
       ReportStatusMessage(_reporters,
-                          REPORTER_MESSAGE_WARNING,
+                          REPORTER_MESSAGE_ERROR,
                           @"%@.",
                           *startupError);
       return;

@@ -64,20 +64,6 @@ static NSString *ProjectPathFromSchemePath(NSString *schemePath)
   return schemePath;
 }
 
-static NSString *FullPathForBasePathAndRelativePath(NSString *basePath, NSString *relativePath)
-{
-  NSString *fullPath = [basePath stringByAppendingPathComponent:relativePath];
-  NSArray *relativePathComponenets = [relativePath pathComponents];
-  for (NSUInteger l=[relativePathComponenets count]; l>0; l--) {
-    NSString *substring = [NSString pathWithComponents:[relativePathComponenets subarrayWithRange:NSMakeRange(0, l)]];
-    if ([basePath hasSuffix:substring]) {
-      fullPath = [basePath stringByAppendingPathComponent:[relativePath substringFromIndex:[substring length]]];
-      break;
-    }
-  }
-  return fullPath;
-}
-
 static NSString *StandardizedContainerPath(NSString *container, NSString *basePath)
 {
   static NSString * const kContainerReference = @"container:";
@@ -140,13 +126,13 @@ static NSDictionary *BuildConfigurationsByActionForSchemePath(NSString *schemePa
     workspaceBasePath = @".";
   }
 
-  NSString *path = [workspacePath stringByAppendingPathComponent:@"contents.xcworkspacedata"];
-  if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+  NSString *xcworkspaceDataPath = [workspacePath stringByAppendingPathComponent:@"contents.xcworkspacedata"];
+  if (![[NSFileManager defaultManager] fileExistsAtPath:xcworkspaceDataPath]) {
     // Git might leave empty directories around with no workspace data.
     return @[];
   }
 
-  NSURL *URL = [NSURL fileURLWithPath:path];
+  NSURL *URL = [NSURL fileURLWithPath:xcworkspaceDataPath];
   NSError *error = nil;
   NSXMLDocument *doc = [[NSXMLDocument alloc] initWithContentsOfURL:URL
                                                             options:0
@@ -695,19 +681,9 @@ containsFilesModifiedSince:(NSDate *)sinceDate
 
     NSArray *skippedTestsNodes = [node nodesForXPath:@"SkippedTests/Test" error:nil];
     NSMutableArray *testsToSkip = [NSMutableArray array];
-    for (NSXMLElement *node in skippedTestsNodes) {
-      NSString *test = [[node attributeForName:@"Identifier"] stringValue];
+    for (NSXMLElement *skippedNode in skippedTestsNodes) {
+      NSString *test = [[skippedNode attributeForName:@"Identifier"] stringValue];
       [testsToSkip addObject:test];
-    }
-
-    NSString *senTestList = nil;
-    BOOL senTestInvertScope = NO;
-    if (testsToSkip.count > 0) {
-      senTestList = [testsToSkip componentsJoinedByString:@","];
-      senTestInvertScope = YES;
-    } else {
-      senTestList = @"All";
-      senTestInvertScope = NO;
     }
 
     Testable *testable = [[Testable alloc] init];
@@ -715,8 +691,7 @@ containsFilesModifiedSince:(NSDate *)sinceDate
     testable.target = target;
     testable.targetID = targetID;
     testable.executable = executable;
-    testable.senTestInvertScope = senTestInvertScope;
-    testable.senTestList = senTestList;
+    testable.skippedTests = testsToSkip;
     testable.skipped = skipped;
     testable.arguments = argumentsAndEnvironment[@"arguments"];
     testable.environment = argumentsAndEnvironment[@"environment"];
@@ -835,8 +810,9 @@ containsFilesModifiedSince:(NSDate *)sinceDate
     NSString *error = nil;
     NSDictionary *settings = buildSettingsWithAction(action, &error);
 
-    if (settings.count == 1) {
-      return settings;
+    if (settings.count >= 1) {
+      NSArray *keys = [settings allKeys];
+      return @{keys[0]: settings[keys[0]]};
     }
 
     if (error) {

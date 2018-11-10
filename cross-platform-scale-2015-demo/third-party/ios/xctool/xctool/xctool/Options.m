@@ -41,6 +41,9 @@
 
 + (NSArray *)actionClasses
 {
+  if (ToolchainIsXcode8OrBetter()) {
+    return @[[RunTestsAction class]];
+  }
   return @[[CleanAction class],
            [BuildAction class],
            [BuildTestsAction class],
@@ -260,6 +263,8 @@
       Action *action = [[verbToClass[argument] alloc] init];
       consumed += [action consumeArguments:argumentList errorMessage:errorMessage];
       [_actions addObject:action];
+    } else if ([argument isEqualToString:_xctoolArgs]) {
+      continue;
     } else {
       *errorMessage = [NSString stringWithFormat:@"Unexpected action: %@", argument];
       break;
@@ -304,8 +309,7 @@
                                      outputPath:@"-"];
     [_reporters addObject:reporterTask];
 
-    if (![[[NSProcessInfo processInfo] environment][@"TRAVIS"] isEqualToString:@"true"] &&
-        !IsRunningUnderTest()) {
+    if (!IsRunningOnCISystem() && !IsRunningUnderTest()) {
       ReporterTask *userNotificationsReporterTask =
       [[ReporterTask alloc] initWithReporterPath:[XCToolReportersPath() stringByAppendingPathComponent:@"user-notifications"]
                                        outputPath:@"-"];
@@ -319,7 +323,7 @@
 - (BOOL)validateAndReturnXcodeSubjectInfo:(XcodeSubjectInfo **)xcodeSubjectInfoOut
                              errorMessage:(NSString **)errorMessage
 {
-  BOOL (^isDirectory)(NSString *) = ^(NSString *path){
+  BOOL (^isDirectoryAtPath)(NSString *) = ^(NSString *path){
     BOOL isDirectory = NO;
     BOOL exists = [[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDirectory];
     return (BOOL)(exists && isDirectory);
@@ -426,7 +430,7 @@
     return NO;
   }
 
-  if (_workspace && !isDirectory(_workspace)) {
+  if (_workspace && !isDirectoryAtPath(_workspace)) {
     *errorMessage = [NSString stringWithFormat:@"Specified workspace doesn't exist: %@", _workspace];
     return NO;
   }
@@ -436,7 +440,7 @@
     return NO;
   }
 
-  if (_project && !isDirectory(_project)) {
+  if (_project && !isDirectoryAtPath(_project)) {
     *errorMessage = [NSString stringWithFormat:@"Specified project doesn't exist: %@", _project];
     return NO;
   }
@@ -447,11 +451,9 @@
   }
 
   if (_resultBundlePath) {
-    BOOL isDirectory = NO;
-    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:_resultBundlePath isDirectory:&isDirectory];
-    if (!isDirectory) {
-      NSString *errorReason = fileExists ? @"must be a directory" : @"doesn't exist";
-      *errorMessage = [NSString stringWithFormat:@"Specified result bundle path %@: %@", errorReason, _resultBundlePath];
+    BOOL fileExists = [[NSFileManager defaultManager] fileExistsAtPath:_resultBundlePath];
+    if (fileExists) {
+      *errorMessage = [NSString stringWithFormat:@"Specified result bundle path already exists: %@", _resultBundlePath];
       return NO;
     }
   }
@@ -564,9 +566,13 @@
     // sourcecode.c.objc for architecture i386
     //
     // Explicitly setting PLATFORM_NAME=iphonesimulator seems to fix it.
-    if (!_buildSettings[Xcode_PLATFORM_NAME] &&
-        [_sdk hasPrefix:@"iphonesimulator"]) {
-      _buildSettings[Xcode_PLATFORM_NAME] = @"iphonesimulator";
+    //
+    // This also works around a bug in Xcode 7.2, where it seems to not
+    // set the platform correctly when -sdk is provided. Setting the
+    // platform name manually works to correct the platform it picks.
+    if (!_buildSettings[Xcode_PLATFORM_NAME]) {
+      NSString *platformName = [[[_platformPath lastPathComponent] stringByDeletingPathExtension] lowercaseString];
+      _buildSettings[Xcode_PLATFORM_NAME] = platformName;
     }
   }
   return YES;
@@ -574,11 +580,30 @@
 
 - (BOOL)_validateDestinationWithErrorMessage:(NSString **)errorMessage {
   if (_destination) {
+    SimulatorInfo *simInfo = [SimulatorInfo new];
     NSDictionary *destInfo = ParseDestinationString(_destination, errorMessage);
 
+    NSString *deviceID = destInfo[@"id"];
     NSString *deviceName = destInfo[@"name"];
+    NSString *deviceOS = destInfo[@"OS"];
+
+    if (deviceID) {
+      NSUUID *udid = [[NSUUID alloc] initWithUUIDString:deviceID];
+      if ([simInfo deviceWithUDID:udid]) {
+        if (deviceName || deviceOS) {
+          *errorMessage = @"If device id is specified, name or OS must not be specified.";
+          return NO;
+        } else {
+          return YES;
+        }
+      } else {
+        *errorMessage = [NSString stringWithFormat:@"'%@' isn't a valid device id.", deviceID];
+        return NO;
+      }
+    }
+
     if (deviceName) {
-      NSString *deviceSystemName = [SimulatorInfo deviceNameForAlias:deviceName];
+      NSString *deviceSystemName = [simInfo deviceNameForAlias:deviceName];
       if (![deviceName isEqual:deviceSystemName] &&
           deviceSystemName) {
         ReportStatusMessage(_reporters, REPORTER_MESSAGE_WARNING,
@@ -586,28 +611,20 @@
         _destination = [_destination stringByReplacingOccurrencesOfString:deviceName withString:deviceSystemName];
         deviceName = deviceSystemName;
       }
-      if (![SimulatorInfo isDeviceAvailableWithAlias:deviceName]) {
+      if (![simInfo isDeviceAvailableWithAlias:deviceName]) {
         *errorMessage = [NSString stringWithFormat:
                          @"'%@' isn't a valid device name. The valid device names are: %@.",
-                         deviceName, [SimulatorInfo availableDevices]];
+                         deviceName, [simInfo availableDevices]];
         return NO;
       }
     }
-    if (destInfo[@"OS"]) {
-      NSString *osVersion = [SimulatorInfo sdkVersionForOSVersion:destInfo[@"OS"]];
-      if (!osVersion) {
+
+    if (deviceOS && deviceName) {
+      if (![simInfo isSdkVersion:deviceOS supportedByDevice:deviceName]) {
         *errorMessage = [NSString stringWithFormat:
-                         @"'%@' isn't a valid iOS version. The valid iOS versions are: %@.",
-                         destInfo[@"OS"], [SimulatorInfo availableSdkVersions]];
+                         @"Device with name '%@' doesn't support iOS version '%@'. The supported iOS versions are: %@.",
+                         deviceName, deviceOS, [simInfo sdksSupportedByDevice:deviceName]];
         return NO;
-      }
-      if (deviceName) {
-        if (![SimulatorInfo isSdkVersion:osVersion supportedByDevice:deviceName]) {
-          *errorMessage = [NSString stringWithFormat:
-                           @"Device with name '%@' doesn't support iOS version '%@'. The supported iOS versions are: %@.",
-                           deviceName, osVersion, [SimulatorInfo sdksSupportedByDevice:deviceName]];
-          return NO;
-        }
       }
     }
   }
@@ -746,6 +763,18 @@
     *errorMessage = [NSString stringWithFormat:@"Unable to find projects (.xcodeproj) in directory %@. Please specify with -workspace, -project, or -find-target.", searchPath];
   }
   return nil;
+}
+
+- (NSString *)findXCToolArgs:(NSArray *)arguments
+{
+  for (NSString *argument in arguments) {
+    if ([argument hasSuffix:XCToolArgsFileExtension]) {
+      _xctoolArgs = [argument copy];
+      break;
+    }
+  }
+  
+  return _xctoolArgs;
 }
 
 - (NSString*)description

@@ -23,8 +23,8 @@
   Testable *copy = [super copyWithZone:zone];
 
   if (copy) {
-    copy.senTestList = _senTestList;
-    copy.senTestInvertScope = _senTestInvertScope;
+    copy.skippedTests = _skippedTests;
+    copy.onlyTests = _onlyTests;
     copy.skipped = _skipped;
     copy.arguments = _arguments;
     copy.environment = _environment;
@@ -37,7 +37,7 @@
 
 - (BOOL)isEqual:(Testable *)other
 {
-  BOOL (^bothNilOrEqual)(id, id) = ^(id a, id b) {
+  BOOL (^bothNilOrEqual)(NSObject *, NSObject *) = ^(NSObject *a, NSObject *b) {
     if (a == nil && b == nil) {
       return YES;
     } else {
@@ -47,8 +47,8 @@
 
   return ([super isEqual:other] &&
           [other isKindOfClass:[Testable class]] &&
-          bothNilOrEqual(_senTestList, other.senTestList) &&
-          _senTestInvertScope == other.senTestInvertScope &&
+          bothNilOrEqual(_skippedTests, other.skippedTests) &&
+          bothNilOrEqual(_onlyTests, other.onlyTests) &&
           _skipped == other.skipped &&
           bothNilOrEqual(_arguments, other.arguments) &&
           bothNilOrEqual(_environment, other.environment) &&
@@ -62,9 +62,9 @@
           [self.target hash] ^
           [self.targetID hash] ^
           [self.executable hash] ^
-          self.buildForRunning ^
-          self.buildForTesting ^
-          self.buildForAnalyzing);
+          (unsigned)self.buildForRunning ^
+          (unsigned)self.buildForTesting ^
+          (unsigned)self.buildForAnalyzing);
 }
 
 

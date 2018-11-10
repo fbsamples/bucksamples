@@ -25,6 +25,8 @@
 #import "OCUnitOSXLogicTestRunner.h"
 #import "Options.h"
 #import "ReportStatus.h"
+#import "SimDevice.h"
+#import "SimRuntime.h"
 #import "SimulatorInfo.h"
 #import "TestableExecutionInfo.h"
 #import "XCToolUtil.h"
@@ -58,14 +60,14 @@ static BOOL IsDirectory(NSString *path) {
   return exists && isDirectory;
 };
 
-NSArray *BucketizeTestCasesByTestCase(NSArray *testCases, int bucketSize)
+NSArray *BucketizeTestCasesByTestCase(NSArray *testCases, NSUInteger bucketSize)
 {
   return chunkifyArray(testCases, bucketSize);
 }
 
-NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize)
+NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, NSUInteger bucketSize)
 {
-  NSMutableArray *testClassNames = [NSMutableArray array];
+  NSMutableArray *allTestClassNames = [NSMutableArray array];
   NSMutableDictionary *testCasesByClass = [NSMutableDictionary dictionary];
 
   for (NSString *classAndMethod in testCases) {
@@ -73,13 +75,13 @@ NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize)
 
     if (testCasesByClass[className] == nil) {
       testCasesByClass[className] = [NSMutableArray array];
-      [testClassNames addObject:className];
+      [allTestClassNames addObject:className];
     }
 
     [testCasesByClass[className] addObject:classAndMethod];
   }
 
-  NSArray *testClassNamesChunked = chunkifyArray(testClassNames, bucketSize);
+  NSArray *testClassNamesChunked = chunkifyArray(allTestClassNames, bucketSize);
 
   NSMutableArray *result = [NSMutableArray array];
 
@@ -96,8 +98,8 @@ NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize)
 
 @interface RunTestsAction ()
 @property (nonatomic, strong) SimulatorInfo *simulatorInfo;
-@property (nonatomic, assign) int logicTestBucketSize;
-@property (nonatomic, assign) int appTestBucketSize;
+@property (nonatomic, assign) NSUInteger logicTestBucketSize;
+@property (nonatomic, assign) NSUInteger appTestBucketSize;
 @property (nonatomic, assign) BucketBy bucketBy;
 @property (nonatomic, assign) int testTimeout;
 @property (nonatomic, strong) NSMutableArray *rawAppTestArgs;
@@ -125,6 +127,12 @@ NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize)
      @"SPEC is TARGET[:Class/case[,Class2/case2]]; use * when specifying class or case prefix."
                        paramName:@"SPEC"
                            mapTo:@selector(addOnly:)],
+    [Action actionOptionWithName:@"omit"
+                         aliases:nil
+                     description:
+     @"SPEC is TARGET[:Class/case[,Class2/case2]]; use * when specifying class or case prefix."
+                       paramName:@"SPEC"
+                           mapTo:@selector(addOmit:)],
     [Action actionOptionWithName:@"freshSimulator"
                          aliases:nil
                      description:
@@ -135,6 +143,16 @@ NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize)
                      description:
      @"Reset simulator content and settings and restart it before running every app test run."
                          setFlag:@selector(setResetSimulator:)],
+    [Action actionOptionWithName:@"newSimulatorInstance"
+                         aliases:nil
+                     description:
+     @"Start new instance of simulator for each application test target."
+                         setFlag:@selector(setNewSimulatorInstance:)],
+    [Action actionOptionWithName:@"noResetSimulatorOnFailure"
+                         aliases:nil
+                     description:
+     @"Do not reset simulator content and settings if running failed."
+                         setFlag:@selector(setNoResetSimulatorOnFailure:)],
     [Action actionOptionWithName:@"freshInstall"
                          aliases:nil
                      description:
@@ -188,6 +206,10 @@ NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize)
                      description:@"Add a path to an app test bundle with the path to its host app"
                        paramName:@"BUNDLE:HOST_APP"
                            mapTo:@selector(addAppTest:)],
+    [Action actionOptionWithName:@"waitForDebugger"
+                         aliases:nil
+                     description:@"Spawned test processes will wait for a debugger to be attached before invoking tests. With the pretty reporter, a message will be displayed with the PID to attach. With the plain reporter, it will just halt."
+                         setFlag:@selector(setWaitForDebugger:)],
     ];
 }
 
@@ -200,17 +222,12 @@ NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize)
     for (NSString *logicTestBundle in logicTests) {
       Testable *testable = [[Testable alloc] init];
       testable.target = logicTestBundle;
-
-      // Will be overridden later if -only is passed
-      testable.senTestList = @"All";
       [result addObject:testable];
     }
 
     for (NSString *appTestBundle in appTests) {
       Testable *testable = [[Testable alloc] init];
       testable.target = appTestBundle;
-
-      testable.senTestList = @"All";
       [result addObject:testable];
     }
     return result;
@@ -257,10 +274,13 @@ NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize)
   NSAssert(sdkName, @"Sdk name should be specified using -sdk option");
   NSAssert(sdkPath, @"Sdk path should be known");
 
+  NSString *platformName = [[[platformPath lastPathComponent] stringByDeletingPathExtension] lowercaseString];
+
   *defaultTestableBuildSettings = @{
     Xcode_SDK_NAME: sdkName,
     Xcode_SDKROOT: sdkPath,
     Xcode_PLATFORM_DIR: platformPath,
+    Xcode_PLATFORM_NAME: platformName,
     Xcode_TARGETED_DEVICE_FAMILY: targetedDeviceFamily ?: @"1", // Default to iPhone simulator
   };
 
@@ -291,6 +311,7 @@ NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize)
 {
   if (self = [super init]) {
     _onlyList = [[NSMutableArray alloc] init];
+    _omitList = [[NSMutableArray alloc] init];
     _logicTestBucketSize = 0;
     _appTestBucketSize = 0;
     _bucketBy = BucketByTestCase;
@@ -308,14 +329,21 @@ NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize)
   [_onlyList addObject:argument];
 }
 
+- (void)addOmit:(NSString *)argument
+{
+  [_omitList addObject:argument];
+}
+
 - (void)setLogicTestBucketSizeValue:(NSString *)str
 {
-  _logicTestBucketSize = [str intValue];
+  NSInteger value = [str integerValue];
+  _logicTestBucketSize = (value > 0 ? (NSUInteger)value : 0);
 }
 
 - (void)setAppTestBucketSizeValue:(NSString *)str
 {
-  _appTestBucketSize = [str intValue];
+  NSInteger value = [str integerValue];
+  _appTestBucketSize = (value > 0 ? (NSUInteger)value : 0);
 }
 
 - (void)setBucketByValue:(NSString *)str
@@ -334,7 +362,7 @@ NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize)
 
 - (void)addLogicTest:(NSString *)argument
 {
-  [_logicTests addObject:argument];
+  [_logicTests addObject:[argument stringByStandardizingPath]];
 }
 
 - (void)addAppTest:(NSString *)argument
@@ -347,28 +375,53 @@ NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize)
   return (_logicTests.count > 0) || (_rawAppTestArgs.count > 0) || (_appTests.count > 0);
 }
 
-- (NSArray *)onlyListAsTargetsAndSenTestList
+- (NSDictionary *)onlyListAsTargetsAndTestCasesList
 {
-  NSMutableArray *results = [NSMutableArray array];
-
-  for (NSString *only in _onlyList) {
-    NSRange colonRange = [only rangeOfString:@":"];
+  NSMutableDictionary *results = [NSMutableDictionary dictionary];
+  for (NSString *item in _onlyList) {
+    NSRange colonRange = [item rangeOfString:@":"];
     NSString *target = nil;
-    NSString *senTestList = nil;
-
+    NSMutableArray *testList = nil;
     if (colonRange.length > 0) {
-      target = [only substringToIndex:colonRange.location];
-      senTestList = [only substringFromIndex:colonRange.location + 1];
+      target = [item substringToIndex:colonRange.location];
+      testList = [[[item substringFromIndex:colonRange.location + 1] componentsSeparatedByString:@","] mutableCopy];
     } else {
-      target = only;
+      target = item;
     }
-
-    [results addObject:@{
-     @"target": target,
-     @"senTestList": senTestList ? senTestList : [NSNull null]
-     }];
+    // Prefer applying the setting to the more specific list rather than the target
+    // if multiple -only are specified and one is a target while the other is a list
+    if (results[target] == nil || [results[target] isEqualTo:[NSNull null]]) {
+      results[target] = testList ?: [NSNull null];
+    } else if (testList != nil) {
+      [results[target] addObjectsFromArray:testList];
+    }
   }
+  return results;
+}
 
+- (NSDictionary *)omitListAsTargetsAndTestCasesList
+{
+  NSMutableDictionary *results = [NSMutableDictionary dictionary];
+  for (NSString *item in _omitList) {
+    NSRange colonRange = [item rangeOfString:@":"];
+    NSString *target = nil;
+    NSMutableArray *testList = nil;
+    if (colonRange.length > 0) {
+      target = [item substringToIndex:colonRange.location];
+      testList = [[[item substringFromIndex:colonRange.location + 1] componentsSeparatedByString:@","] mutableCopy];
+    } else {
+      target = item;
+    }
+    if (results[target] == nil) {
+      results[target] = testList ?: [NSNull null];
+    } else {
+      if (testList == nil || [results[target] isEqualTo:[NSNull null]]) {
+        results[target] = [NSNull null];
+      } else {
+        [results[target] addObjectsFromArray:testList];
+      }
+    }
+  }
   return results;
 }
 
@@ -402,6 +455,14 @@ NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize)
     }
     [_simulatorInfo setDeviceName:destInfo[@"name"]];
     [_simulatorInfo setOSVersion:destInfo[@"OS"]];
+    if (destInfo[@"id"] != nil) {
+      NSUUID *udid = [[NSUUID alloc] initWithUUIDString:destInfo[@"id"]];
+      SimulatorInfo *simInfo = [SimulatorInfo new];
+      SimDevice *device = [simInfo deviceWithUDID:udid];
+      [_simulatorInfo setDeviceName:device.name];
+      [_simulatorInfo setOSVersion:device.runtime.versionString];
+      [_simulatorInfo setDeviceUDID:udid];
+    }
   }
 
   for (NSString *logicTestPath in _logicTests) {
@@ -419,8 +480,8 @@ NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize)
       return NO;
     }
 
-    NSString *testBundle = [rawAppTestArg substringToIndex:colonRange.location];
-    NSString *hostApp = [rawAppTestArg substringFromIndex:colonRange.location + 1];
+    NSString *testBundle = [[rawAppTestArg substringToIndex:colonRange.location] stringByStandardizingPath];
+    NSString *hostApp = [[rawAppTestArg substringFromIndex:colonRange.location + 1] stringByStandardizingPath];
     NSString *existingHostAppForTestBundle = _appTests[testBundle];
 
     if (existingHostAppForTestBundle) {
@@ -443,12 +504,16 @@ NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize)
     _appTests[testBundle] = hostApp;
   }
 
-  for (NSDictionary *only in [self onlyListAsTargetsAndSenTestList]) {
-    if ([[self class] _matchingTestableForTarget:only[@"target"]
+  if (_onlyList.count > 0 && _omitList.count > 0) {
+    *errorMessage = @"run-tests: -only and -omit cannot both be specified.";
+    return NO;
+  }
+  for (NSString *target in [self onlyListAsTargetsAndTestCasesList]) {
+    if ([[self class] _matchingTestableForTarget:target
                                       logicTests:_logicTests
                                         appTests:_appTests
                                 xcodeSubjectInfo:xcodeSubjectInfo] == nil) {
-      *errorMessage = [NSString stringWithFormat:@"run-tests: '%@' is not a testing target in this scheme.", only[@"target"]];
+      *errorMessage = [NSString stringWithFormat:@"run-tests: '%@' is not a testing target in this scheme.", target];
       return NO;
     }
   }
@@ -461,13 +526,24 @@ NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize)
   NSArray *testables = nil;
 
   if (_onlyList.count == 0) {
-    // Use whatever we found in the scheme, except for skipped tests.
+    // Use whatever we found in the scheme, except for skipped tests in the scheme, and
+    // tests omitted via the command line.
     NSMutableArray *unskipped = [NSMutableArray array];
     NSArray *allTestables = [[self class] _allTestablesForLogicTests:_logicTests
                                                             appTests:_appTests
                                                     xcodeSubjectInfo:xcodeSubjectInfo];
-
+    NSDictionary *omit = [self omitListAsTargetsAndTestCasesList];
     for (Testable *testable in allTestables) {
+      NSMutableArray *omitList = omit[testable.target];
+      if (omitList != nil) {
+        // Set tests omitted via command line as skipped.  Tests omitted via the scheme are
+        // already set to skipped.
+        if (testable.skipped || [omitList isKindOfClass:[NSNull class]]) {
+          testable.skipped = true;
+        } else {
+          testable.skippedTests = [testable.skippedTests arrayByAddingObjectsFromArray:omitList];
+        }
+      }
       if (!testable.skipped) {
         [unskipped addObject:testable];
       }
@@ -476,22 +552,20 @@ NSArray *BucketizeTestCasesByTestClass(NSArray *testCases, int bucketSize)
   } else {
     // Munge the list of testables from the scheme to only include those given.
     NSMutableArray *newTestables = [NSMutableArray array];
-    for (NSDictionary *only in [self onlyListAsTargetsAndSenTestList]) {
+    NSDictionary *onlyTargets = [self onlyListAsTargetsAndTestCasesList];
+    for (NSString *only in onlyTargets) {
       Testable *matchingTestable =
-        [[self class] _matchingTestableForTarget:only[@"target"]
+        [[self class] _matchingTestableForTarget:only
                                       logicTests:_logicTests
                                         appTests:_appTests
                                 xcodeSubjectInfo:xcodeSubjectInfo];
 
       if (matchingTestable) {
-        Testable *newTestable = [matchingTestable copy];
-
-        if (only[@"senTestList"] != [NSNull null]) {
-          newTestable.senTestList = only[@"senTestList"];
-          newTestable.senTestInvertScope = NO;
+        NSArray *onlyList = onlyTargets[only];
+        if (![onlyList isKindOfClass:[NSNull class]]) {
+          matchingTestable.onlyTests = onlyList;
         }
-
-        [newTestables addObject:newTestable];
+        [newTestables addObject:matchingTestable];
       }
     }
     testables = newTestables;
@@ -611,9 +685,13 @@ typedef BOOL (^TestableBlock)(NSArray *reporters);
                                                                       environment:environment
                                                                    freshSimulator:_freshSimulator
                                                                    resetSimulator:_resetSimulator
+                                                             newSimulatorInstance:_newSimulatorInstance
+                                                        noResetSimulatorOnFailure:_noResetSimulatorOnFailure
                                                                      freshInstall:_freshInstall
+                                                                  waitForDebugger:_waitForDebugger
                                                                       testTimeout:_testTimeout
-                                                                        reporters:reporters];
+                                                                        reporters:reporters
+                                                               processEnvironment:[[NSProcessInfo processInfo] environment]];
 
     PublishEventToReporters(reporters,
                             [[self class] eventForBeginOCUnitFromTestableExecutionInfo:testableExecutionInfo action:self]);
@@ -649,7 +727,7 @@ typedef BOOL (^TestableBlock)(NSArray *reporters);
   // Note that the operation must not acquire this resources in one block and
   // release in another block submitted to the same queue, as it may lead to
   // starvation since the queue may not run the release block.
-  dispatch_semaphore_t queueLimiter = dispatch_semaphore_create([[NSProcessInfo processInfo] processorCount]);
+  dispatch_semaphore_t queueLimiter = dispatch_semaphore_create((long)[[NSProcessInfo processInfo] processorCount]);
 
   NSMutableArray *blocksToRunOnMainThread = [NSMutableArray array];
   NSMutableArray *blocksToRunOnDispatchQueue = [NSMutableArray array];
@@ -733,31 +811,77 @@ typedef BOOL (^TestableBlock)(NSArray *reporters);
       continue;
     }
 
-    // array of [class, (bool) GC Enabled]
-    Class testRunnerClass = [self testRunnerClassForBuildSettings:info.buildSettings];
-    BOOL isApplicationTest = TestableSettingsIndicatesApplicationTest(info.buildSettings);
+    if (info.testable.skipped) {
+      NSString *message = [NSString stringWithFormat:@"skipping: This test bundle is disabled in %@ scheme.\n", xcodeSubjectInfo.subjectScheme];
+      TestableBlock block = [self blockToAdvertiseMessage:message
+                                 forTestableExecutionInfo:info
+                                                succeeded:YES];
+      NSArray *annotatedBlock = @[block, info.testable.target];
+      [blocksToRunOnDispatchQueue addObject:annotatedBlock];
+      continue;
+    }
+
+    if (info.testCasesQueryError != nil) {
+      NSString *message = [NSString stringWithFormat:@"Failed to query the list of test cases in the test bundle: %@", info.testCasesQueryError];
+      TestableBlock block = [self blockToAdvertiseMessage:message
+                                 forTestableExecutionInfo:info
+                                                succeeded:NO];
+      NSString *blockAnnotation = info.buildSettings[Xcode_FULL_PRODUCT_NAME];
+      NSArray *annotatedBlock = @[block, blockAnnotation];
+      [blocksToRunOnDispatchQueue addObject:annotatedBlock];
+      continue;
+    }
+
+    if (info.testCases.count == 0) {
+      TestableBlock block;
+      NSString *blockAnnotation;
+      if (_failOnEmptyTestBundles) {
+        block = [self blockToAdvertiseMessage:@"This test bundle contained no tests. Treating as a failure since -failOnEmpyTestBundles is enabled.\n"
+                     forTestableExecutionInfo:info
+                                    succeeded:NO];
+        blockAnnotation = info.buildSettings[Xcode_FULL_PRODUCT_NAME];
+      } else {
+        block = [self blockToAdvertiseMessage:@"skipping: This test bundle contained no tests.\n"
+                     forTestableExecutionInfo:info
+                                    succeeded:YES];
+        blockAnnotation = info.buildSettings[Xcode_FULL_PRODUCT_NAME];
+      }
+      NSArray *annotatedBlock = @[block, blockAnnotation];
+      [blocksToRunOnDispatchQueue addObject:annotatedBlock];
+      continue;
+    }
 
     NSString *filterError = nil;
     NSArray *testCases = [OCUnitTestRunner filterTestCases:info.testCases
-                                           withSenTestList:info.testable.senTestList
-                                        senTestInvertScope:info.testable.senTestInvertScope
+                                             onlyTestCases:info.testable.onlyTests
+                                          skippedTestCases:info.testable.skippedTests
                                                      error:&filterError];
-    if (!testCases) {
+    if (testCases == nil) {
       TestableBlock block = [self blockToAdvertiseMessage:filterError
                                  forTestableExecutionInfo:info
                                                 succeeded:NO];
       NSArray *annotatedBlock = @[block, info.testable.target];
       [blocksToRunOnDispatchQueue addObject:annotatedBlock];
       continue;
+    } else if (testCases.count == 0) {
+      NSString *message = [NSString stringWithFormat:@"skipping: No test cases to run or all test cases were skipped.\n"];
+      TestableBlock block = [self blockToAdvertiseMessage:message
+                                 forTestableExecutionInfo:info
+                                                succeeded:YES];
+      NSArray *annotatedBlock = @[block, info.testable.target];
+      [blocksToRunOnDispatchQueue addObject:annotatedBlock];
+      continue;
     }
 
-    int bucketSize = isApplicationTest ? _appTestBucketSize : _logicTestBucketSize;
+    Class testRunnerClass = [self testRunnerClassForBuildSettings:info.buildSettings];
+    BOOL isApplicationTest = TestableSettingsIndicatesApplicationTest(info.buildSettings);
+    NSUInteger bucketSize = isApplicationTest ? _appTestBucketSize : _logicTestBucketSize;
     NSArray *testChunks;
 
     if (_bucketBy == BucketByClass) {
-      testChunks = BucketizeTestCasesByTestClass(testCases, bucketSize > 0 ? bucketSize : INT_MAX);
+      testChunks = BucketizeTestCasesByTestClass(testCases, bucketSize != 0 ? bucketSize : INT_MAX);
     } else if (_bucketBy == BucketByTestCase) {
-      testChunks = BucketizeTestCasesByTestCase(testCases, bucketSize > 0 ? bucketSize : INT_MAX);
+      testChunks = BucketizeTestCasesByTestCase(testCases, bucketSize != 0 ? bucketSize : INT_MAX);
     } else {
       NSAssert(NO, @"Unexpected value for _bucketBy: %ld", _bucketBy);
       abort();
@@ -765,44 +889,17 @@ typedef BOOL (^TestableBlock)(NSArray *reporters);
 
     int bucketCount = 1;
 
-    for (NSArray *senTestListChunk in testChunks) {
-
-      TestableBlock block;
-      NSString *blockAnnotation;
-
-      if (info.testCasesQueryError != nil) {
-        block = [self blockToAdvertiseMessage:[NSString stringWithFormat:
-                                             @"Failed to query the list of test cases in the test bundle: %@", info.testCasesQueryError]
-                     forTestableExecutionInfo:info
-                                    succeeded:NO];
-        blockAnnotation = info.buildSettings[Xcode_FULL_PRODUCT_NAME];
-      } else if (info.testCases.count == 0) {
-        if (_failOnEmptyTestBundles) {
-          block = [self blockToAdvertiseMessage:@"This test bundle contained no tests. Treating as a failure since -failOnEmpyTestBundles is enabled.\n"
-                       forTestableExecutionInfo:info
-                                      succeeded:NO];
-          blockAnnotation = info.buildSettings[Xcode_FULL_PRODUCT_NAME];
-        } else {
-          block = [self blockToAdvertiseMessage:@"skipping: This test bundle contained no tests.\n"
-                       forTestableExecutionInfo:info
-                                      succeeded:YES];
-          blockAnnotation = info.buildSettings[Xcode_FULL_PRODUCT_NAME];
-        }
-      } else {
-        block = [self blockForTestable:info.testable
-                      focusedTestCases:senTestListChunk
-                          allTestCases:info.testCases
-                 testableExecutionInfo:info
-                        testableTarget:info.testable.target
-                     isApplicationTest:isApplicationTest
-                             arguments:info.expandedArguments
-                           environment:info.expandedEnvironment
-                       testRunnerClass:testRunnerClass];
-        blockAnnotation = [NSString stringWithFormat:@"%@ (bucket #%d, %ld tests)",
-                           info.buildSettings[Xcode_FULL_PRODUCT_NAME],
-                           bucketCount,
-                           [senTestListChunk count]];
-      }
+    for (NSArray *testListChunk in testChunks) {
+      TestableBlock block = [self blockForTestable:info.testable
+                                  focusedTestCases:testListChunk
+                                      allTestCases:info.testCases
+                             testableExecutionInfo:info
+                                    testableTarget:info.testable.target
+                                 isApplicationTest:isApplicationTest
+                                         arguments:info.expandedArguments
+                                       environment:info.expandedEnvironment
+                                   testRunnerClass:testRunnerClass];
+      NSString *blockAnnotation = [NSString stringWithFormat:@"%@ (bucket #%d, %ld tests)", info.buildSettings[Xcode_FULL_PRODUCT_NAME], bucketCount, testListChunk.count];
       NSArray *annotatedBlock = @[block, blockAnnotation];
 
       if (isApplicationTest) {
@@ -816,7 +913,7 @@ typedef BOOL (^TestableBlock)(NSArray *reporters);
   }
 
   __block BOOL succeeded = YES;
-  __weak NSMutableArray *bundlesInProgress = [NSMutableArray array];
+  NSMutableArray *bundlesInProgress = [NSMutableArray array];
 
   void (^runTestableBlockAndSaveSuccess)(TestableBlock, NSString *) = ^(TestableBlock block, NSString *blockAnnotation) {
     NSArray *reporters;

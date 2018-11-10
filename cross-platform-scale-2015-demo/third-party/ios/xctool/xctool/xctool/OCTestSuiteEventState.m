@@ -59,6 +59,8 @@
 
   _totalDuration = [event[kReporter_TimestampKey] doubleValue] - [_beginTestSuiteInfo[kReporter_TimestampKey] doubleValue];
 
+  [_tests makeObjectsPerformSelector:@selector(publishEvents)];
+
   NSMutableDictionary *finalEvent = [event mutableCopy];
   finalEvent[kReporter_EndTestSuite_TestCaseCountKey] = @([self testCount]);
   finalEvent[kReporter_EndTestSuite_TotalFailureCountKey] = @([self totalFailures]);
@@ -150,7 +152,7 @@
 
 - (OCTestEventState *)runningTest
 {
-  NSUInteger idx = [_tests indexOfObjectPassingTest:^(OCTestEventState *test, NSUInteger idx, BOOL *stop) {
+  NSUInteger idx = [_tests indexOfObjectPassingTest:^(OCTestEventState *test, NSUInteger index, BOOL *stop) {
     return [test isRunning];
   }];
 
@@ -184,7 +186,7 @@
 
 - (OCTestEventState *)getTestWithTestName:(NSString *)name
 {
-  NSUInteger idx = [_tests indexOfObjectPassingTest:^(OCTestEventState *test, NSUInteger idx, BOOL *stop) {
+  NSUInteger idx = [_tests indexOfObjectPassingTest:^(OCTestEventState *test, NSUInteger index, BOOL *stop) {
     return [[test testName] isEqualToString:name];
   }];
 

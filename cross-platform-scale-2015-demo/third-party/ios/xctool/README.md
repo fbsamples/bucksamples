@@ -1,7 +1,7 @@
 # xctool
 
-__xctool__ is a replacement for Apple's __xcodebuild__ that makes it
-easier to build and test iOS and Mac products.  It's especially helpful
+__xctool__ is an extension for Apple's __xcodebuild__ that makes it
+easier to test iOS and Mac products.  It's especially helpful
 for continuous integration.
 
 [![Build Status](https://travis-ci.org/facebook/xctool.png?branch=master)](https://travis-ci.org/facebook/xctool)
@@ -14,14 +14,23 @@ for continuous integration.
 
 ## Features
 
-__xctool__ is drop-in replacement for xcodebuild that adds a few extra
-features:
+__xctool__ is drop-in replacement for `xcodebuild test` that adds a few
+extra features:
 
-* **Structured output of build and test results.**
+* **Faster, parallelized test runs.**
 
-  _xctool_ captures all build events and test results as structured JSON
-objects.  If you're building a continuous integration system, this means
-you don't have to regex parse _xcodebuild_ output anymore.
+  _xctool_ can optionally run all of your test bundles in parallel,
+speeding up your test runs significantly.  At Facebook, we've seen 2x
+and 3x speed ups by parallelizing our runs.
+
+  Use the `-parallelize` option with _run-tests_ or _test_ to enable.
+See [Parallelizing Test Runs](#parallelizing-test-runs) for more info.
+
+* **Structured output of test results.**
+
+  _xctool_ captures all test results as structured JSON objects.  If
+you're building a continuous integration system, this means you don't
+have to regex parse _xcodebuild_ output anymore.
 
   Try one of the [Reporters](#reporters) to customize the output or get
 the full event stream with the `-reporter json-stream` option.
@@ -37,23 +46,22 @@ problems are.
 
 	![pretty output](https://fpotter_public.s3.amazonaws.com/xctool-uicatalog.gif)
 
-* **Faster, parallelized test runs.**
-
-  _xctool_ can optionally run all of your test bundles in parallel,
-speeding up your test runs significantly.  At Facebook, we've seen 2x
-and 3x speed ups by parallelizing our runs.
-
-  Use the `-parallelize` option with _run-tests_ or _test_ to enable.
-See [Parallelizing Test Runs](#parallelizing-test-runs) for more info.
-
 * **Written in Objective-C.**
 
-  _xctool_ is written in Objective-C. Mac OS X and iOS developers can easily submit new
-features and fix any bugs they may encounter without learning a new language. We very much welcome pull requests!
+  _xctool_ is written in Objective-C. Mac OS X and iOS developers can
+easily submit new features and fix any bugs they may encounter without
+learning a new language. We very much welcome pull requests!
+
+
+**Note:** Support for building projects with xctool is deprecated and will
+not be updated to support future versions of Xcode. We suggest moving to
+`xcodebuild` (with [xcpretty](https://github.com/supermarin/xcpretty)) for
+simple needs, or [xcbuild](https://github.com/facebook/xcbuild) for more
+involved requirements. xctool will continue to support testing (see above).
 
 ## Requirements
 
-* Xcode 6 or higher
+* Xcode 7 or higher
 * You'll need Xcode's Command Line Tools installed.  From Xcode, install
 via _Xcode &rarr; Preferences &rarr; Downloads_.
 
@@ -78,57 +86,28 @@ You can always get help and a full list of options with:
 path/to/xctool.sh -help
 ```
 
-### Building
-
-Building products with _xctool_ is the same as building them with
-_xcodebuild_.
-
-If you use workspaces and schemes:
-
-```bash
-path/to/xctool.sh \
-  -workspace YourWorkspace.xcworkspace \
-  -scheme YourScheme \
-  build
-```
-
-If you use projects and schemes:
-
-```bash
-path/to/xctool.sh \
-  -project YourProject.xcodeproj \
-  -scheme YourScheme \
-  build
-```
-
-All of the common options like `-configuration`, `-sdk`, `-arch` work
-just as they do with _xcodebuild_.
-
-NOTE: _xctool_ doesn't support directly building targets using
-`-target`; you must use schemes.
-
 ### Testing
 
-_xctool_ has a __test__ action which knows how to build and run the
+_xctool_ has a __run-tests__ action which knows how to run the
 tests in your scheme.  You can optionally limit what tests are run
 or change the SDK they're run against.
 
-To build and run all tests in your scheme, you would use:
+To run all tests in your scheme, you would use:
 
 ```bash
 path/to/xctool.sh \
   -workspace YourWorkspace.xcworkspace \
   -scheme YourScheme \
-  test
+  run-tests
 ```
 
-To build and run just the tests in a specific target, use the `-only` option:
+To run just the tests in a specific target, use the `-only` option:
 
 ```bash
 path/to/xctool.sh \
   -workspace YourWorkspace.xcworkspace \
   -scheme YourScheme \
-  test -only SomeTestTarget
+  run-tests -only SomeTestTarget
 ```
 
 You can go further and just run a specific test class:
@@ -137,7 +116,7 @@ You can go further and just run a specific test class:
 path/to/xctool.sh \
   -workspace YourWorkspace.xcworkspace \
   -scheme YourScheme \
-  test -only SomeTestTarget:SomeTestClass
+  run-tests -only SomeTestTarget:SomeTestClass
 ```
 
 Or, even further and run just a single test method:
@@ -146,7 +125,7 @@ Or, even further and run just a single test method:
 path/to/xctool.sh \
   -workspace YourWorkspace.xcworkspace \
   -scheme YourScheme \
-  test -only SomeTestTarget:SomeTestClass/testSomeMethod
+  run-tests -only SomeTestTarget:SomeTestClass/testSomeMethod
 ```
 
 You can also specify prefix matching for classes or test methods:
@@ -155,7 +134,16 @@ You can also specify prefix matching for classes or test methods:
 path/to/xctool.sh \
   -workspace YourWorkspace.xcworkspace \
   -scheme YourScheme \
-  test -only SomeTestTarget:SomeTestClassPrefix*,SomeTestClass/testSomeMethodPrefix*
+  run-tests -only SomeTestTarget:SomeTestClassPrefix*,SomeTestClass/testSomeMethodPrefix*
+```
+
+Alternatively, you can omit a specific item by prefix matching for classes or test methods:
+
+```bash
+path/to/xctool.sh \
+  -workspace YourWorkspace.xcworkspace \
+  -scheme YourScheme \
+  run-tests -omit SomeTestTarget:SomeTestClass/testSomeMethodPrefix*
 ```
 
 You can also run tests against a different SDK:
@@ -164,13 +152,35 @@ You can also run tests against a different SDK:
 path/to/xctool.sh \
   -workspace YourWorkspace.xcworkspace \
   -scheme YourScheme \
-  test -test-sdk iphonesimulator5.1
+  run-tests -test-sdk iphonesimulator5.1
 ```
+
+Optionally you can specify `-testTimeout` when running tests. When an individual
+test hits this timeout, it is considered a failure rather than waiting indefinitely. 
+This can prevent your test run from deadlocking forever due to misbehaving tests.
+
+By default application tests will wait at most 30 seconds for the simulator
+to launch. If you need to change this timeout, use the `-launch-timeout` option.
 
 #### Building Tests
 
-While __test__ will build and run your tests, sometimes you want to
-build them without running them.  For that, use __build-tests__.
+Before running tests you need to build them. You can use __xcodebuild__,  __xcbuild__ or __Buck__ to do that. 
+
+For example:
+
+```bash
+xcodebuild \
+  -workspace YourWorkspace.xcworkspace \
+  -scheme YourScheme \
+  build-for-testing
+```
+
+
+
+##### Xcode 7
+
+If you are using Xcode 7 for building you can continue using xctool to build tests using
+__build-tests__ or just use __test__ actions to run tests.
 
 For example:
 
@@ -190,29 +200,6 @@ path/to/xctool.sh \
   build-tests -only SomeTestTarget
 ```
 
-#### Running Tests
-
-If you've already built tests with __build-tests__, you can use
-__run-tests__ to run them.  This is helpful if you want to build tests
-once but run them against multiple SDKs.
-
-To run all tests, you would use:
-
-```bash
-path/to/xctool.sh \
-  -workspace YourWorkspace.xcworkspace \
-  -scheme YourScheme \
-  run-tests
-```
-
-Just as with the __test__ action, you can limit which tests are run with
-the `-only`.  And, you can change which SDK they're run against
-with the `-test-sdk`.
-
-Optionally you can specify `-testTimeout` when running tests. When an individual test hits this timeout, it is considered a failure rather than waiting indefinitely. This can prevent your test run from deadlocking forever due to misbehaving tests.
-
-By default application tests will wait at most 30 seconds for the simulator
-to launch. If you need to change this timeout, use the `-launch-timeout` option.
 
 #### Parallelizing Test Runs
 
@@ -249,6 +236,41 @@ The above will break your test execution into buckets of _20_ test
 cases each, and those bundles will be run concurrently.  If some of your
 test bundles are much larger than others, this will help even things out
 and speed up the overall test run.
+
+### Building (Xcode 7 only)
+
+**Note:** Support for building projects with xctool is deprecated and isn't
+supported in Xcode 8 and later. We suggest moving to `xcodebuild` (with 
+[xcpretty](https://github.com/supermarin/xcpretty)) for
+simple needs, or [xcbuild](https://github.com/facebook/xcbuild) for more
+involved requirements. Alternatively you can use [Buck](https://buckbuild.com/).
+
+Building products with _xctool_ is the same as building them with
+_xcodebuild_.
+
+If you use workspaces and schemes:
+
+```bash
+path/to/xctool.sh \
+  -workspace YourWorkspace.xcworkspace \
+  -scheme YourScheme \
+  build
+```
+
+If you use projects and schemes:
+
+```bash
+path/to/xctool.sh \
+  -project YourProject.xcodeproj \
+  -scheme YourScheme \
+  build
+```
+
+All of the common options like `-configuration`, `-sdk`, `-arch` work
+just as they do with _xcodebuild_.
+
+NOTE: _xctool_ doesn't support directly building targets using
+`-target`; you must use schemes.
 
 ## Continuous Integration
 
@@ -317,12 +339,16 @@ Started](http://about.travis-ci.org/docs/user/getting-started/) page.
 
 xctool has reporters that output build and test results in different
 formats.  If you do not specify any reporters yourself, xctool uses
-the `pretty` and `user-notifications` reporters by default.
-The `plain` reporter is used in place of the `pretty` reporter
-when xctool does not detect a TTY. This can be overridden by
-setting `XCTOOL_FORCE_TTY` in the environment. The `user-notifications`
-reporter will not be used if xctool detects that the build is 
-being run by Travis CI, i.e. `TRAVIS=true` in the environment.
+the `pretty` and `user-notifications` reporters by default. xctool also
+has these special rules:
+
+* Overwrite is disabled on the `pretty` reporter when xctool does not
+detect a TTY. This can be overridden by setting `XCTOOL_FORCE_TTY` in
+the environment.
+* The `user-notifications` reporter will not be used
+if xctool detects that the build is being run by Travis CI, CircleCI, TeamCity,
+or Jenkins (i.e. `TRAVIS=true`, `CIRCLECI=true`, `TEAMCITY_VERSION`, or
+`JENKINS_URL` in the environment).
 
 You can choose your own reporters with the `-reporter` option:
 

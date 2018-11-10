@@ -17,56 +17,9 @@
 #import "Reporter.h"
 
 #import <objc/runtime.h>
-#import <poll.h>
-#import <sys/stat.h>
 
-static void ReadFileDescriptorAndOutputLinesToBlock(int inputFD,
-                                                    void (^block)(NSString *line))
-{
-  NSMutableData *buffer = [NSMutableData dataWithCapacity:0];
-
-  // Split whatever content we have in 'buffer' into lines.
-  void (^processBuffer)(void) = ^{
-    NSUInteger offset = 0;
-    NSData *newlineData = [NSData dataWithBytes:"\n" length:1];
-    for (;;) {
-      NSRange newlineRange = [buffer rangeOfData:newlineData
-                                         options:0
-                                           range:NSMakeRange(offset, [buffer length] - offset)];
-      if (newlineRange.length == 0) {
-        break;
-      } else {
-        NSData *line = [buffer subdataWithRange:NSMakeRange(offset, newlineRange.location - offset)];
-        block([[NSString alloc] initWithData:line encoding:NSUTF8StringEncoding]);
-        offset = newlineRange.location + 1;
-      }
-    }
-
-    [buffer replaceBytesInRange:NSMakeRange(0, offset) withBytes:NULL length:0];
-  };
-
-  const int readBufferSize = 32768;
-  uint8_t *readBuffer = malloc(readBufferSize);
-  NSCAssert(readBuffer, @"Failed to alloc readBuffer");
-
-  for (;;) {
-    ssize_t bytesRead = read(inputFD, readBuffer, readBufferSize);
-    NSCAssert(bytesRead != -1, @"read() failed with error: %s", strerror(errno));
-
-    if (bytesRead > 0) {
-      @autoreleasepool {
-        [buffer appendBytes:readBuffer length:bytesRead];
-
-        processBuffer();
-      }
-    } else {
-      // EOF
-      break;
-    }
-  }
-
-  free(readBuffer);
-}
+#import "ReporterEvents.h"
+#import "TaskUtil.h"
 
 @implementation Reporter
 
@@ -78,7 +31,12 @@ static void ReadFileDescriptorAndOutputLinesToBlock(int inputFD,
 
   [reporter willBeginReporting];
 
-  ReadFileDescriptorAndOutputLinesToBlock([inputHandle fileDescriptor], ^(NSString *line){
+  int fildes[1] = {inputHandle.fileDescriptor};
+  ReadOutputsAndFeedOuputLinesToBlockOnQueue(fildes, 1, ^(int fd, NSString *line){
+    if (line.length == 0) {
+      return;
+    }
+
     @autoreleasepool {
       NSError *error = nil;
       NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:[line dataUsingEncoding:NSUTF8StringEncoding]
@@ -87,7 +45,7 @@ static void ReadFileDescriptorAndOutputLinesToBlock(int inputFD,
       NSCAssert(dict != nil, @"Failed to decode JSON '%@' with error: %@", line, [error localizedFailureReason]);
       [reporter handleEvent:dict];
     }
-  });
+  }, NULL, NULL, YES);
 
   [reporter didFinishReporting];
 
@@ -118,7 +76,7 @@ static void ReadFileDescriptorAndOutputLinesToBlock(int inputFD,
 {
   NSAssert(([eventDict count] > 0), @"Event was empty.");
 
-  NSString *event = eventDict[@"event"];
+  NSString *event = eventDict[kReporter_Event_Key];
   NSAssert(event != nil && [event length] > 0, @"Event name was empty for event: %@", eventDict);
 
   NSMutableString *selectorName = [NSMutableString string];
@@ -155,6 +113,7 @@ static void ReadFileDescriptorAndOutputLinesToBlock(int inputFD,
 - (void)beginTest:(NSDictionary *)event {}
 - (void)endTest:(NSDictionary *)event {}
 - (void)testOutput:(NSDictionary *)event {}
+- (void)simulatorOutput:(NSDictionary *)event {}
 - (void)beginStatus:(NSDictionary *)event {}
 - (void)endStatus:(NSDictionary *)event {}
 - (void)analyzerResult:(NSDictionary *)event {}
