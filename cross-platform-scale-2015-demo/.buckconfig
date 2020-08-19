@@ -16,16 +16,16 @@
   xctool_zip_target = //third-party/ios/xctool:xctool-minimal-zip
 
 [ndk]
-  ndk_version = r10e
-  app_platform = android-21
+  ndk_version = 19.2.5345600
+  app_platform = android-28
 
 [android]
-  target = Google Inc.:Google APIs:23
+  target = Google Inc.:Google APIs:24
 
 [java]
   src_roots = /android/java/
-  source_level = 6
-  target_level = 6
+  source_level = 8
+  target_level = 8
 
 [parser]
   default_build_file_syntax = skylark
