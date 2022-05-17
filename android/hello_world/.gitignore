@@ -1,0 +1,35 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+/app/build
+/captures
+.externalNativeBuild
+.cxx
+local.properties
+
+app/libs/*
+
+# Buck
+/.buckd
+/buck-out
+/buck-cache
+
+# Keystores
+# In Buck, all input files must live under the project root.
+# Therefore, you need to create the following files in this
+# project with your own keystore:
+keystore/debug.keystore
+# Most likely, you can use the standard debug keystore by running
+# the following:
+#
+#     cp ~/.android/debug.keystore keystore/debug.keystore
+
+third-party
