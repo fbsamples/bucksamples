@@ -1,0 +1,51 @@
+
+android_library(
+    name = "deps",
+    exported_deps = [
+        "//third-party/androidx/appcompat:appcompat",
+        "//third-party/com/google/android/material:material",
+        "//third-party/androidx/constraintlayout:constraintlayout"
+    ],
+    visibility = ["PUBLIC"],
+)
+
+android_build_config(
+    name = "build_config",
+    package = "com.example.helloworld",
+)
+
+android_resource(
+  name = 'res',
+  res = 'src/main/res',
+  package = 'com.example.helloworld',
+  visibility = [
+    "PUBLIC",
+  ],
+)
+
+android_library(
+  name = 'lib',
+  srcs = glob(['src/main/java/**/*.java']),
+  deps = [
+    ':res',
+    ':deps'
+  ],
+)
+
+android_binary(
+  name = 'app',
+  aapt_mode = 'aapt2',
+  manifest = 'src/main/AndroidManifest.xml',
+  manifest_entries = {
+    'version_code': 1,
+    'version_name': '1.0',
+    'min_sdk_version': 21,
+    'target_sdk_version': 32
+  },
+  keystore = '//keystore:debug_keystore',
+  deps = [
+    ':lib',
+    ':res',
+    ':deps',
+  ],
+)
